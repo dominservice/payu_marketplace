@@ -1,0 +1,26 @@
+{
+    "name": "dominservice/payu_marketplace",
+    "type": "library",
+    "description": "Library for PAYU Marketplace",
+    "keywords": ["php", "payu", "marketplace", "api", "integration"],
+    "homepage": "https://github.com/dominservice/payu_marketplace",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "dominservice",
+            "email": "biuro@dso.biz.pl",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "require-all": true,
+    "autoload": {
+        "psr-4": {
+            "Dominservice\\PayuMarketplace\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
