@@ -13,8 +13,10 @@
         }
     ],
     "require": {
+        "php": ">=7.3",
         "ext-curl": "*",
-        "ext-json": "*"
+        "ext-json": "*",
+        "openpayu/openpayu": "^2.3"
     },
     "require-all": true,
     "autoload": {

@@ -4,6 +4,35 @@ namespace Dominservice\PayuMarketplace;
 
 class Api
 {
+    const TYPE_PAYOUT_ACCOUNT_DATA = 'PAYOUT_ACCOUNT_DATA';
+    const TYPE_FULL = 'FULL';
+    const TYPE_UPDATE = 'UPDATE';
+    const TYPE_REVERIFICATION = 'REVERIFICATION';
+    const TYPE_PERSONAL_ID_TAX_ID_CHANGE = 'PERSONAL_ID_TAX_ID_CHANGE';
+
+    const STATUS_WAITING_FOR_DATA = 'WAITING_FOR_DATA';
+    const STATUS_WAITING_FOR_VERIFICATION = 'WAITING_FOR_VERIFICATION';
+    const STATUS_REJECTED = 'REJECTED';
+    const STATUS_POSITIVE = 'POSITIVE';
+    const STATUS_NEGATIVE = 'NEGATIVE';
+
+    const LEGAL_FORM_PRIVATE_PERSON = 'PRIVATE_PERSON';
+    const LEGAL_FORM_SOLE_TRADER = 'SOLE_TRADER';
+    const LEGAL_FORM_LEGAL_ENTITY = 'LEGAL_ENTITY'; // - only for foreign, non EOG companies
+    const LEGAL_FORM_ASSOCIATION = 'ASSOCIATION';
+    const LEGAL_FORM_CIVIL_LAW_PARTNERSHIP = 'CIVIL_LAW_PARTNERSHIP';
+    const LEGAL_FORM_FOREIGN_COMPANY = 'FOREIGN_COMPANY';
+    const LEGAL_FORM_FOUNDATION = 'FOUNDATION';
+    const LEGAL_FORM_GENERAL_PARTNERSHIP = 'GENERAL_PARTNERSHIP';
+    const LEGAL_FORM_JOINT_STOCK_COMPANY = 'JOINT_STOCK_COMPANY';
+    const LEGAL_FORM_LIMITED_JOINT_STOCK_PARTNERSHIP = 'LIMITED_JOINT_STOCK_PARTNERSHIP';
+    const LEGAL_FORM_LIMITED_LIABILITY_COMPANY = 'LIMITED_LIABILITY_COMPANY';
+    const LEGAL_FORM_LIMITED_LIABILITY_PARTNERSHIP = 'LIMITED_LIABILITY_PARTNERSHIP';
+    const LEGAL_FORM_PROFESSIONAL_PARTNERSHIP = 'PROFESSIONAL_PARTNERSHIP';
+    const LEGAL_FORM_LIMITED_PARTNERSHIP = 'LIMITED_PARTNERSHIP';
+    const LEGAL_FORM_OTHER = 'OTHER';
+
+
     private $baseUrl = 'https://secure.payu.com/';
 
     private $verifyPath = 'verification-advice';
@@ -23,10 +52,16 @@ class Api
 
     private $grant_type;
 
-    public function __construct($client_id, $client_secret)
+    public function __construct($client_id, $client_secret, $access_token)
     {
         $this->client_id = $client_id;
         $this->client_secret = $client_secret;
+        $this->access_token = $access_token;
+    }
+
+    protected function getClientId()
+    {
+        return $this->client_id;
     }
 
     /**
@@ -52,9 +87,12 @@ class Api
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     private function checkIsExpired()
     {
-        if (time() >= $this->getExpireTimeAt()) {
+        if (time() >= $this->getExpireTimeAt(true)) {
             $this->access_token = null;
             $this->token_type = null;
             $this->expire_time_at = null;
@@ -78,10 +116,12 @@ class Api
         return $this->token_type;
     }
 
-    protected function getExpireTimeAt()
+    protected function getExpireTimeAt($checkExpired = false)
     {
-        $this->checkIsExpired();
-        return $this->expire_time_at;
+        if (!$checkExpired) {
+            $this->checkIsExpired();
+        }
+        return (int)$this->expire_time_at;
     }
 
     protected function getGrantType()
@@ -116,11 +156,11 @@ class Api
      * @param $type
      * @return mixed|null
      */
-    protected function verification($sellerId, $type = Verification::TYPE_FULL)
+    protected function verification($sellerId, $type = Api::TYPE_FULL)
     {
         try {
             $requestData = 'sellerId='.$sellerId.'&type='.$type;
-            list($err, $errno, $info, $data) = $this->curlRequest($this->verifyPath, 'POST', $requestData);
+            list($err, $errno, $info, $data) = $this->curlRequest($this->verifyPath, 'POST', $requestData, [], 'json');
 
             if (empty($err)) {
                 return json_decode($data);
@@ -137,9 +177,18 @@ class Api
      * @param $headers
      * @param $requestDataType
      * @param $options
+     * @param $postData
      * @return array
      */
-    protected function curlRequest($url, $method = 'GET', $requestData = null, $headers = [], $requestDataType = 'http_query', $options = [])
+    protected function curlRequest(
+        $url,
+        $method = 'GET',
+        $requestData = null,
+        $headers = [],
+        $requestDataType = 'http_query',
+        $options = [],
+        $postData = []
+    )
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->baseUrl.$url);
@@ -152,7 +201,11 @@ class Api
             if ($requestDataType === 'http_query') {
                 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($requestData));
             } elseif ($requestDataType === 'json') {
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
+                if (!empty($postData)) {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+                } else {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
+                }
             } else {
                 if (is_array($requestData)) {
                     $data = [];
