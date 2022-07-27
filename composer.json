@@ -15,8 +15,7 @@
     "require": {
         "php": ">=7.3",
         "ext-curl": "*",
-        "ext-json": "*",
-        "openpayu/openpayu": "^2.3"
+        "ext-json": "*"
     },
     "require-all": true,
     "autoload": {

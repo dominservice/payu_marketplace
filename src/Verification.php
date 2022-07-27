@@ -37,9 +37,9 @@ class Verification extends Api
      * @param $client_id
      * @param $client_secret
      */
-    public function __construct($client_id, $client_secret)
+    public function __construct($client_id, $client_secret, $enviroment = 'secure', $access_token = null)
     {
-        parent::__construct($client_id, $client_secret);
+        parent::__construct($client_id, $client_secret, $enviroment, $access_token);
 
         $this->auth();
     }

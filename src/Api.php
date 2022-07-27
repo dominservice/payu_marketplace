@@ -35,7 +35,7 @@ class Api
 
     private $baseUrl = 'https://secure.payu.com/';
 
-    private $verifyPath = 'verification-advice';
+    private $verifyPath = 'verification';
     private $verifyAdvicePath = 'verification-advice';
 
     private $authPath = 'pl/standard/user/oauth/authorize';
