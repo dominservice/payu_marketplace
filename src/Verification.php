@@ -2,20 +2,15 @@
 
 namespace Dominservice\PayuMarketplace;
 
-use Dominservice\PayuMarketplace\Exception\AddressException;
-use Dominservice\PayuMarketplace\Exception\CompanyException;
-use Dominservice\PayuMarketplace\Exception\ContactException;
-use Dominservice\PayuMarketplace\Exception\LegalFormException;
-use Dominservice\PayuMarketplace\Exception\PersonException;
-use Dominservice\PayuMarketplace\Exception\SellerIdException;
-use Dominservice\PayuMarketplace\Exception\VerificationIdException;
+use Dominservice\PayuMarketplace\Api\Configuration;
+use Dominservice\PayuMarketplace\Api\Http;
+use Dominservice\PayuMarketplace\Api\PayU;
+use Dominservice\PayuMarketplace\Api\Util;
+use Dominservice\PayuMarketplace\Exception\PayuMarketplaceException;
 
 
-class Verification extends Api
+class Verification extends PayU
 {
-    private $verificationId;
-    private $sellerId;
-    private $status;
     private $companyName;
     private $name;
     private $surname;
@@ -33,422 +28,131 @@ class Verification extends Api
     private $personalIdentificationNumber;
     private $dateOfBirth;
 
-    /**
-     * @param $client_id
-     * @param $client_secret
-     */
-    public function __construct($client_id, $client_secret, $enviroment = 'secure', $access_token = null)
-    {
-        parent::__construct($client_id, $client_secret, $enviroment, $access_token);
 
-        $this->auth();
-    }
+
 
     /**
-     * @param $taxId
-     * @return bool
+     * Checking Registration
+     *
+     * @param $identificationNumber
+     * @return mixed|null
      */
-    public function checkCompanyIsVerified($taxId)
+    public static function verificationAdvice($identificationNumber)
     {
-        if ($data = $this->verificationAdvice($taxId)) {
-            $this->verificationId = !empty($data->verificationId) ? $data->verificationId : null;
-            $this->sellerId = !empty($data->sellerId) ? $data->sellerId : null;
-            $this->status = !empty($data->status) ? $data->status : null;
-
-            return true;
+        try {
+            $authType = self::getAuth();
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
         }
 
-        return false;
+        $pathUrl = Configuration::getVerificationAdviceEndpoint() . '/' . $identificationNumber;
+
+        $result = self::verifyResponse(Http::doGet($pathUrl, $authType), 'VerificationAdviceResponse');
+
+        return $result;
     }
 
     /**
-     * @param $personalIdentificationNumber
-     * @return bool
+     * Initializing Verification
+     *
+     * @param array $seller
+     * @return object $result Response array with $seller InitializeVerificationResponse
+     * @throws PayuMarketplaceException
      */
-    public function checkPersonIsVerified($personalIdentificationNumber)
+    public static function initializingVerification($seller)
     {
-        if ($data = $this->verificationAdvice($personalIdentificationNumber)) {
-            $this->verificationId = !empty($data->verificationId) ? $data->verificationId : null;
-            $this->sellerId = !empty($data->sellerId) ? $data->sellerId : null;
-            $this->status = !empty($data->status) ? $data->status : null;
+        $data = Util::buildJsonFromArray($seller);
 
-            return true;
+        if (empty($data)) {
+            throw new PayuMarketplaceException('Empty message InitializeVerificationResponse');
         }
 
-        return false;
-
-    }
-
-    /**
-     * @param $personalIdentificationNumber
-     * @return bool
-     */
-    public function checkSellerVerified($personalIdentificationNumber)
-    {
-        if ($data = $this->verificationAdvice($personalIdentificationNumber)) {
-            $this->verificationId = !empty($data->verificationId) ? $data->verificationId : null;
-            $this->sellerId = !empty($data->sellerId) ? $data->sellerId : null;
-            $this->status = !empty($data->status) ? $data->status : null;
-
-            return true;
+        try {
+            $authType = self::getAuth();
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
         }
 
-        return false;
+        $pathUrl = Configuration::getVerificationEndpoint();
 
-    }
+        $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'InitializeVerificationResponse');
 
-    public function getVerificationId()
-    {
-        return $this->verificationId;
-    }
-
-    public function getSellerId()
-    {
-        return $this->sellerId;
+        return $result;
     }
 
     /**
-     * @return string
+     * Initializing Verification
+     *
+     * @param array $seller
+     * @return object $result Response array with $seller InitializeVerificationResponse
+     * @throws PayuMarketplaceException
      */
-    public function getStatus()
+    public static function setSellerData($seller)
     {
-        return $this->status;
-    }
+        $data = Util::buildJsonFromArray($seller);
 
-    /**
-     * @return bool
-     */
-    public function sellerIsVerified()
-    {
-        return 'STATUS_'.$this->status === Api::STATUS_POSITIVE;
-    }
-
-    /**
-     * @return bool
-     */
-    public function sellerIsNotVerified()
-    {
-        return 'STATUS_'.$this->status === Api::STATUS_NEGATIVE;
-    }
-
-    /**
-     * @return bool
-     */
-    public function sellerIsWaiting()
-    {
-        return 'STATUS_'.$this->status === Api::STATUS_WAITING_FOR_DATA
-            ||  'STATUS_'.$this->status === Api::STATUS_WAITING_FOR_VERIFICATION;
-    }
-
-    /**
-     * @return bool
-     */
-    public function sellerIsWaitingForData()
-    {
-        return 'STATUS_'.$this->status === Api::STATUS_WAITING_FOR_DATA;
-    }
-
-    /**
-     * @return bool
-     */
-    public function sellerIsWaitingForVerification()
-    {
-        return 'STATUS_'.$this->status === Api::STATUS_WAITING_FOR_VERIFICATION;
-    }
-
-    /**
-     * @param $verificationId
-     * @return $this
-     */
-    public function setVerificationId($verificationId)
-    {
-        $this->verificationId = $verificationId;
-
-        return $this;
-    }
-
-    /**
-     * @param $sellerId
-     * @return $this
-     */
-    public function setSellerId($sellerId)
-    {
-        $this->sellerId = $sellerId;
-
-        return $this;
-    }
-
-    /**
-     * @param $companyName
-     * @return $this
-     */
-    public function setCompanyName($companyName)
-    {
-        $this->companyName = $companyName;
-
-        return $this;
-    }
-
-    /**
-     * @param $name
-     * @return $this
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @param $surname
-     * @return $this
-     */
-    public function setSurname($surname)
-    {
-        $this->surname = $surname;
-
-        return $this;
-    }
-
-    /**
-     * @param $taxId
-     * @return $this
-     */
-    public function setTaxId($taxId)
-    {
-        $this->taxId = $taxId;
-
-        return $this;
-    }
-
-    /**
-     * @param $legalForm
-     * @return $this
-     */
-    public function setLegalForm($legalForm)
-    {
-        $this->legalForm = $legalForm;
-
-        return $this;
-    }
-
-    /**
-     * @param $gusCode
-     * @return $this
-     */
-    public function setGusCode($gusCode)
-    {
-        $this->gusCode = $gusCode;
-
-        return $this;
-    }
-
-    /**
-     * @param $registryNumber
-     * @return $this
-     */
-    public function setRegistryNumber($registryNumber)
-    {
-        $this->registryNumber = $registryNumber;
-
-        return $this;
-    }
-
-    /**
-     * @param $registrationDate
-     * @return $this
-     */
-    public function setRegistrationDate($registrationDate)
-    {
-        $this->registrationDate = $registrationDate;
-
-        return $this;
-    }
-
-    /**
-     * @param string $country
-     * @param string|false $street
-     * @param string|false $zipcode
-     * @param string|false $city
-     * @param bool $isAccountCloned
-     * @return $this
-     */
-    public function setAddress($country, $street = false, $zipcode = false, $city = false, $isAccountCloned = false)
-    {
-        $this->address = ['country' => $country];
-
-        if ($street) {
-            $this->address['street'] = $street;
+        if (empty($data)) {
+            throw new PayuMarketplaceException('Empty message SellerDataResponse');
         }
 
-        if ($zipcode) {
-            $this->address['zipcode'] = $zipcode;
+        try {
+            $authType = self::getAuth();
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
         }
 
-        if ($city) {
-            $this->address['city'] = $city;
-        }
+        $pathUrl = Configuration::getSellerDataEndpoint();
 
-        if ($isAccountCloned) {
-//            $this->address['isAccountCloned'] = $isAccountCloned;
-            $this->address['isAccountCloned'] = 'true';
-        }
+        $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'SellerDataResponse');
 
-        return $this;
+        return $result;
     }
+
+
+
+
+
+
+
+
 
     /**
-     * @param $email
-     * @return $this
+     * Verify response from PayU
+     *
+     * @param $response
+     * @param $messageName
+     * @return Api\Result|void
+     * @throws Exception\AuthException
+     * @throws Exception\NetworkException
+     * @throws Exception\RequestException
+     * @throws Exception\ServerErrorException
+     * @throws Exception\ServerMaintenanceException
      */
-    public function setEmail($email)
+    public static function verifyResponse($response, $messageName)
     {
-        $this->email = $email;
+        $data = array();
+        $httpStatus = $response['code'];
 
-        return $this;
+        $message = Util::convertJsonToArray($response['response'], true);
+
+        $data['status'] = isset($message['status']['statusCode']) ? $message['status']['statusCode'] : null;
+
+        if (json_last_error() == JSON_ERROR_SYNTAX) {
+            $data['response'] = $response['response'];
+        } elseif (isset($message[$messageName])) {
+            unset($message[$messageName]['Status']);
+            $data['response'] = $message[$messageName];
+        } elseif (isset($message)) {
+            $data['response'] = $message;
+            unset($message['status']);
+        }
+
+        $result = self::build($data);
+
+        if ($httpStatus == 200 || $httpStatus == 201 || $httpStatus == 422 || $httpStatus == 301 || $httpStatus == 302) {
+            return $result;
+        }
+
+        Http::throwHttpStatusException($httpStatus, $result);
     }
-
-    /**
-     * @param $phone
-     * @return $this
-     */
-    public function setPhone($phone)
-    {
-        $this->phone = $phone;
-
-        return $this;
-    }
-
-    /**
-     * @param $personalIdentificationNumber
-     * @return $this
-     */
-    public function setPersonalIdentificationNumber($personalIdentificationNumber)
-    {
-        $this->personalIdentificationNumber = $personalIdentificationNumber;
-
-        return $this;
-    }
-
-    /**
-     * @param $dateOfBirth
-     * @return $this
-     */
-    public function setDateOfBirth($dateOfBirth)
-    {
-        $this->dateOfBirth = $dateOfBirth;
-
-        return $this;
-    }
-
-    /**
-     * @param $typeAccount
-     * @param $typeVerification
-     * @return void
-     * @throws AddressException
-     * @throws CompanyException
-     * @throws ContactException
-     * @throws LegalFormException
-     * @throws PersonException
-     * @throws SellerIdException
-     * @throws VerificationIdException
-     */
-    public function setDataToVerification($typeAccount = 'company', $typeVerification = Api::TYPE_FULL)
-    {
-        if (empty($this->verificationId)) {
-            throw new VerificationIdException("An empty 'verificationId' parameter must be provided to be able to query the API");
-        }
-
-        if (empty($this->sellerId)) {
-            throw new SellerIdException("An empty 'sellerId' parameter must be provided to be able to query the API");
-        }
-
-        $data = [
-            'verificationId' => $this->verificationId,
-            'sellerId' => $this->sellerId,
-        ];
-
-        if ($typeAccount === 'company') {
-            if (empty($this->companyName)) {
-                throw new CompanyException("An empty 'companyName' parameter must be provided to be able to query the API");
-            } else {
-                $data['companyName'] = $this->companyName;
-            }
-            if (empty($this->taxId)) {
-                throw new CompanyException("An empty 'taxId' parameter must be provided to be able to query the API");
-            } else {
-                $data['taxId'] = $this->taxId;
-            }
-            if (!empty($this->gusCode)) {
-                $data['gusCode'] = $this->gusCode;
-            }
-            if (!empty($this->registryNumber)) {
-                $data['registryNumber'] = $this->registryNumber;
-            }
-            if (!empty($this->registrationDate)) {
-                $data['registrationDate'] = $this->registrationDate;
-            }
-        } else {
-            if (empty($this->name)) {
-                throw new PersonException("An empty 'name' parameter must be provided to be able to query the API");
-            } else {
-                $data['name'] = $this->name;
-            }
-            if (empty($this->surname)) {
-                throw new PersonException("An empty 'surname' parameter must be provided to be able to query the API");
-            } else {
-                $data['surname'] = $this->surname;
-            }
-            if ($typeVerification === Api::TYPE_FULL && empty($this->personalIdentificationNumber)) {
-                throw new PersonException("An empty 'personalIdentificationNumber' parameter must be provided to be able to query the API");
-            } elseif (!empty($this->personalIdentificationNumber)) {
-                $data['personalIdentificationNumber'] = $this->personalIdentificationNumber;
-            }
-            if (empty($this->dateOfBirth)) {
-                throw new PersonException("An empty 'dateOfBirth' parameter must be provided to be able to query the API");
-            } else {
-                $data['dateOfBirth'] = $this->dateOfBirth;
-            }
-        }
-
-        if (empty($this->legalForm)) {
-            throw new LegalFormException("An empty 'legalForm' parameter must be provided to be able to query the API");
-        } else {
-            $data['legalForm'] = $this->legalForm;
-        }
-
-        if (empty($this->address)) {
-            throw new AddressException("An empty 'address' parameter must be provided to be able to query the API");
-        } elseif (empty($this->address['country'])) {
-            throw new AddressException("An empty 'country' parameter in address must be provided to be able to query the API");
-        } else {
-            if ($typeVerification === Api::TYPE_FULL) {
-                if (empty($this->address['street'])) {
-                    throw new AddressException("An empty 'street' parameter in address must be provided to be able to query the API");
-                } elseif (empty($this->address['Zipcode'])) {
-                    throw new AddressException("An empty 'Zipcode' parameter in address must be provided to be able to query the API");
-                } elseif (empty($this->address['city'])) {
-                    throw new AddressException("An empty 'city' parameter in address must be provided to be able to query the API");
-                }
-            }
-            $data['address'] = $this->address;
-        }
-
-        if (empty($this->email)) {
-            throw new ContactException("An empty 'email' parameter must be provided to be able to query the API");
-        } else {
-            $data['email'] = $this->email;
-        }
-
-        if (empty($this->phone)) {
-            throw new ContactException("An empty 'phone' parameter must be provided to be able to query the API");
-        } else {
-            $data['phone'] = $this->phone;
-        }
-
-
-
-    }
-
 }

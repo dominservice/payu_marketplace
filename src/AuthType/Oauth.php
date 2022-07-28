@@ -11,6 +11,9 @@
 
 namespace Dominservice\PayuMarketplace\AuthType;
 
+use Dominservice\PayuMarketplace\Exception\ConfigException;
+use Dominservice\PayuMarketplace\Exception\PayuMarketplaceException;
+
 class Oauth implements AuthType
 {
     /**
@@ -21,17 +24,17 @@ class Oauth implements AuthType
     public function __construct($clientId, $clientSecret)
     {
         if (empty($clientId)) {
-            throw new OpenPayU_Exception_Configuration('ClientId is empty');
+            throw new ConfigException('ClientId is empty');
         }
 
         if (empty($clientSecret)) {
-            throw new OpenPayU_Exception_Configuration('ClientSecret is empty');
+            throw new ConfigException('ClientSecret is empty');
         }
 
         try {
-            $this->oauthResult = OpenPayU_Oauth::getAccessToken();
-        } catch (OpenPayU_Exception $e) {
-            throw new OpenPayU_Exception('Oauth error: [code=' . $e->getCode() . '], [message=' . $e->getMessage() . ']');
+            $this->oauthResult = \Dominservice\PayuMarketplace\Api\Oauth::getAccessToken();
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException('Oauth error: [code=' . $e->getCode() . '], [message=' . $e->getMessage() . ']');
         }
     }
 

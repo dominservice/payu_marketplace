@@ -168,7 +168,7 @@ class Util
         }
 
         if (self::isAssocArray($array)) {
-            $object = new stdClass();
+            $object = new \stdClass();
         } else {
             $object = array();
         }

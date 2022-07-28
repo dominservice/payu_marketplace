@@ -70,7 +70,7 @@ class Oauth
         $data = array(
             'grant_type' => Configuration::getOauthGrantType(),
             'client_id' => $clientId ? $clientId : Configuration::getOauthClientId(),
-            'client_secret' => $clientSecret ? $clientSecret : onfiguration::getOauthClientSecret()
+            'client_secret' => $clientSecret ? $clientSecret : Configuration::getOauthClientSecret()
         );
 
         if (Configuration::getOauthGrantType() === OauthGrantType::TRUSTED_MERCHANT) {

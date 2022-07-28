@@ -11,6 +11,8 @@
 
 namespace Dominservice\PayuMarketplace\AuthType;
 
+use Dominservice\PayuMarketplace\Exception\ConfigException;
+
 class Basic implements AuthType
 {
 
@@ -22,11 +24,11 @@ class Basic implements AuthType
     public function __construct($posId, $signatureKey)
     {
         if (empty($posId)) {
-            throw new OpenPayU_Exception_Configuration('PosId is empty');
+            throw new ConfigException('PosId is empty');
         }
 
         if (empty($signatureKey)) {
-            throw new OpenPayU_Exception_Configuration('SignatureKey is empty');
+            throw new ConfigException('SignatureKey is empty');
         }
 
         $this->authBasicToken = base64_encode($posId . ':' . $signatureKey);

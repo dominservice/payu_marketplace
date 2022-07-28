@@ -61,6 +61,11 @@ class Configuration
     private static $verificationAdviceEndpoint = '';
 
     /**
+     * Verification seller data protocol - endpoint address
+     */
+    private static $sellerDataEndpoint = '';
+
+    /**
      * OAuth protocol - methods for token cache
      */
     private static $oauthTokenCache = null;
@@ -96,7 +101,8 @@ class Configuration
     const OAUTH_CONTEXT = 'pl/standard/user/oauth/authorize';
     const VERIVICATION_CONTEXT = 'verification';
     const VERIVICATION_ADVICE_CONTEXT = 'verification-advice';
-    
+    const SELLER_DATA_CONTEXT = 'dataloading/seller';
+
     /**
      * @return string
      */
@@ -138,7 +144,7 @@ class Configuration
     public static function setEnvironment($environment = 'secure', $domain = 'payu.com', $api = 'api/', $version = 'v2_1/')
     {
         $environment = strtolower($environment);
-        $domain = strtolower($domain) . 'Configuration.php/';
+        $domain = strtolower($domain) . '/';
 
         if (!in_array($environment, self::$_availableEnvironment)) {
             throw new ConfigException($environment . ' - is not valid environment');
@@ -151,11 +157,12 @@ class Configuration
         } elseif ($environment == 'sandbox') {
             $domain = 'https://secure.snd.' . $domain;
         }
-        
+
         self::$serviceUrl = $domain . $api . $version;
         self::$oauthEndpoint = $domain . self::OAUTH_CONTEXT;
         self::$verificationEndpoint = $domain . self::VERIVICATION_CONTEXT;
         self::$verificationAdviceEndpoint = $domain . self::VERIVICATION_ADVICE_CONTEXT;
+        self::$sellerDataEndpoint = $domain . self::SELLER_DATA_CONTEXT;
     }
 
     /**
@@ -188,6 +195,14 @@ class Configuration
     public static function getVerificationAdviceEndpoint()
     {
         return self::$verificationAdviceEndpoint;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getSellerDataEndpoint()
+    {
+        return self::$sellerDataEndpoint;
     }
 
     /**

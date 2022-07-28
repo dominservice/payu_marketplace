@@ -2,7 +2,7 @@
 
 namespace Dominservice\PayuMarketplace\Exception;
 
-class SellerIdException extends \Exception
+class OrderException extends PayuMarketplaceException
 {
 
 }
