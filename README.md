@@ -6,6 +6,17 @@ The seller verification elements for the market place have been added, as well a
 
 __The library is currently under construction, please check back, it will be ready soon.__
 
+Installing
+==========
+
+Add the dependency to your project:
+
+```bash
+composer require dominservice/payu_marketplace
+```
+
+Usage
+=====
 
 # TEST
 
