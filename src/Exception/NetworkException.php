@@ -11,7 +11,4 @@
 
 namespace Dominservice\PayuMarketplace\Exception;
 
-class NetworkException extends PayuMarketplaceException
-{
-
-}
+class NetworkException extends PayuMarketplaceException {}

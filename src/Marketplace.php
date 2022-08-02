@@ -6,11 +6,13 @@ use Dominservice\PayuMarketplace\Api\Configuration;
 use Dominservice\PayuMarketplace\Api\PayU;
 use Dominservice\PayuMarketplace\Exception\OrderException;
 use Dominservice\PayuMarketplace\Exception\VerificationException;
+use Dominservice\PayuMarketplace\Order;
 
 class Marketplace
 {
     private $notifyUrl;
     private $continueUrl;
+    private $pos_id;
     private $products = [];
     private $sellerProducts = [];
     private $shippingMethods = [];
@@ -21,6 +23,14 @@ class Marketplace
      * @var array
      */
     private $customer;
+    private $associateId;
+    private $associateType;
+    private $associateName;
+    private $associateSurname;
+    private $associateCitizenship;
+    private $associateIdentityNumber;
+    private $associateBirthDate;
+    private $associateCountryOfBirth;
 
     /**
      * @return Api\Result|object
@@ -92,11 +102,11 @@ class Marketplace
      */
     private function getContinueUrl()
     {
-        if (!$this->continueUrl) {
+        if (!$this->notifyUrl) {
             throw new OrderException("The address for continue is missing, add it using the setContinueUrl() method");
         }
 
-        return $this->continueUrl;
+        return $this->notifyUrl;
     }
 
     /**
@@ -517,6 +527,94 @@ class Marketplace
     }
 
     /**
+     * @param $dateOfBirth
+     * @return $this
+     */
+    public function setAssociateId($associateId)
+    {
+        $this->associateId = $associateId;
+
+        return $this;
+    }
+
+    /**
+     * @param $dateOfBirth
+     * @return $this
+     */
+    public function setAssociateType($associateType)
+    {
+        $this->associateType = $associateType;
+
+        return $this;
+    }
+
+    /**
+     * @param $dateOfBirth
+     * @return $this
+     */
+    public function setAssociateName($associateName)
+    {
+        $this->associateName = $associateName;
+
+        return $this;
+    }
+
+    /**
+     * @param $dateOfBirth
+     * @return $this
+     */
+    public function setAssociateSurname($associateSurname)
+    {
+        $this->associateSurname = $associateSurname;
+
+        return $this;
+    }
+
+    /**
+     * @param $dateOfBirth
+     * @return $this
+     */
+    public function setAssociateCitizenship($associateCitizenship)
+    {
+        $this->associateCitizenship = strtoupper($associateCitizenship);
+
+        return $this;
+    }
+
+    /**
+     * @param $dateOfBirth
+     * @return $this
+     */
+    public function setAssociateIdentityNumber($associateIdentityNumber)
+    {
+        $this->associateIdentityNumber = $associateIdentityNumber;
+
+        return $this;
+    }
+
+    /**
+     * @param $dateOfBirth
+     * @return $this
+     */
+    public function setAssociateBirthDate ($associateBirthDate )
+    {
+        $this->associateBirthDate  = $associateBirthDate ;
+
+        return $this;
+    }
+
+    /**
+     * @param $dateOfBirth
+     * @return $this
+     */
+    public function setAssociateCountryOfBirth ($associateCountryOfBirth )
+    {
+        $this->associateCountryOfBirth  = $associateCountryOfBirth ;
+
+        return $this;
+    }
+
+    /**
      * @param $typeAccount
      * @param $typeVerification
      * @return Api\Result|false|object
@@ -617,6 +715,84 @@ class Marketplace
         }
 
         if ($data = Verification::setSellerData($data)) {
+            return $data;
+        }
+
+        return false;
+    }
+
+    public function setSellerAssociates()
+    {
+        if (empty($this->verificationId)) {
+            throw new VerificationException("An empty 'verificationId' parameter must be provided to be able to query the API");
+        }
+
+        if (empty($this->associateId)) {
+            throw new VerificationException("An empty 'associateId' parameter must be provided to be able to query the API");
+        }
+        if (empty($this->associateType)) {
+            throw new VerificationException("An empty 'associateType' parameter must be provided to be able to query the API");
+        } elseif (!in_array($this->associateType, ['BENEFICIARY', 'REPRESENTATIVE'])) {
+            throw new VerificationException("Associate Type is invalid, myst be between BENEFICIARY and REPRESENTATIVE");
+        }
+
+        if (empty($this->associateName)) {
+            throw new VerificationException("An empty 'associateName' parameter must be provided to be able to query the API");
+        }
+
+        if (empty($this->associateSurname)) {
+            throw new VerificationException("An empty 'associateSurname' parameter must be provided to be able to query the API");
+        }
+
+        if (empty($this->associateCitizenship)) {
+            throw new VerificationException("An empty 'associateCitizenship' parameter must be provided to be able to query the API");
+        }
+
+        if ($this->associateCitizenship === 'PL' && empty($this->associateIdentityNumber)) {
+            throw new VerificationException("An empty 'associateIdentityNumber' parameter must be provided to be able to query the API");
+        } elseif ($this->associateCitizenship !== 'PL' && empty($this->associateBirthDate)) {
+            throw new VerificationException("An empty 'associateBirthDate' parameter must be provided to be able to query the API");
+        }
+
+        $data = [
+            'verificationId' => $this->verificationId,
+            'associateId' => $this->associateId,
+            'associateType' => $this->associateType,
+            'associateName' => $this->associateName,
+            'associateSurname' => $this->associateSurname,
+            'associateCitizenship' => $this->associateCitizenship,
+        ];
+        if (!empty($this->associateIdentityNumber)) {
+            $data['associateIdentityNumber'] = $this->associateIdentityNumber;
+        }
+        if (!empty($this->associateBirthDate)) {
+            $data['associateBirthDate'] = $this->associateBirthDate;
+        }
+        if (!empty($this->associateCountryOfBirth)) {
+            $data['associateCountryOfBirth'] = $this->associateCountryOfBirth;
+        }
+
+        if ($data = Verification::setSellerAssociates($data)) {
+            return $data;
+        }
+
+        return false;
+    }
+
+    public function setSellerFile($filename, $filePath, $filesize)
+    {
+        if (empty($this->verificationId)) {
+            throw new VerificationException("An empty 'verificationId' parameter must be provided to be able to query the API");
+        }
+
+        $data = [
+            'verificationId' => $this->verificationId,
+            'content' => $filePath,
+            'filename' => $filename,
+            '__file_size__' => $filesize,
+        ];
+
+        if ($data = Verification::setSellerFile($data, $filesize)) {
             return $data;
         }
 

@@ -6,11 +6,26 @@ use Dominservice\PayuMarketplace\Api\Configuration;
 use Dominservice\PayuMarketplace\Api\Http;
 use Dominservice\PayuMarketplace\Api\PayU;
 use Dominservice\PayuMarketplace\Api\Util;
+use Dominservice\PayuMarketplace\Exception\AddressException;
+use Dominservice\PayuMarketplace\Exception\AuthException;
+use Dominservice\PayuMarketplace\Exception\CompanyException;
+use Dominservice\PayuMarketplace\Exception\ContactException;
+use Dominservice\PayuMarketplace\Exception\LegalFormException;
+use Dominservice\PayuMarketplace\Exception\NetworkException;
 use Dominservice\PayuMarketplace\Exception\PayuMarketplaceException;
+use Dominservice\PayuMarketplace\Exception\PersonException;
+use Dominservice\PayuMarketplace\Exception\RequestException;
+use Dominservice\PayuMarketplace\Exception\SellerIdException;
+use Dominservice\PayuMarketplace\Exception\ServerErrorException;
+use Dominservice\PayuMarketplace\Exception\ServerMaintenanceException;
+use Dominservice\PayuMarketplace\Exception\VerificationIdException;
 
 
 class Verification extends PayU
 {
+    private $verificationId;
+    private $sellerId;
+    private $status;
     private $companyName;
     private $name;
     private $surname;
@@ -46,7 +61,6 @@ class Verification extends PayU
         }
 
         $pathUrl = Configuration::getVerificationAdviceEndpoint() . '/' . $identificationNumber;
-
         $result = self::verifyResponse(Http::doGet($pathUrl, $authType), 'VerificationAdviceResponse');
 
         return $result;
@@ -74,7 +88,6 @@ class Verification extends PayU
         }
 
         $pathUrl = Configuration::getVerificationEndpoint();
-
         $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'InitializeVerificationResponse');
 
         return $result;
@@ -102,8 +115,63 @@ class Verification extends PayU
         }
 
         $pathUrl = Configuration::getSellerDataEndpoint();
-
         $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'SellerDataResponse');
+
+        return $result;
+    }
+
+    /**
+     * Initializing Verification
+     *
+     * @param array $seller
+     * @return object $result Response array with $seller InitializeVerificationResponse
+     * @throws PayuMarketplaceException
+     */
+    public static function setSellerAssociates($associate)
+    {
+        $data = Util::buildJsonFromArray($associate);
+
+        if (empty($data)) {
+            throw new PayuMarketplaceException('Empty message SellerDataResponse');
+        }
+
+        try {
+            $authType = self::getAuth();
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
+        }
+
+        $pathUrl = Configuration::getSellerAssociatesEndpoint();
+        $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'SellerAssociatesResponse');
+
+        return $result;
+    }
+
+    /**
+     * Initializing Verification
+     *
+     * @param array $seller
+     * @return object $result Response array with $seller InitializeVerificationResponse
+     * @throws PayuMarketplaceException
+     */
+    public static function setSellerFile($data, $filesize)
+    {
+//        $data = Util::buildJsonFromArray($file);
+
+//        if (empty($data)) {
+//            throw new PayuMarketplaceException('Empty message SellerFileResponse');
+//        }
+
+        try {
+            $authType = self::getAuth();
+            $authType->setHeader('Content-Type', 'multipart/form-data');
+//            $authType->setHeader('Content-Length', $filesize);
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
+        }
+
+        $pathUrl = Configuration::getSellerAssociatesEndpoint();
+        $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'SellerFileResponse');
 
         return $result;
     }
@@ -146,13 +214,94 @@ class Verification extends PayU
             $data['response'] = $message;
             unset($message['status']);
         }
-
+// dump($data, $response, $httpStatus);
         $result = self::build($data);
 
-        if ($httpStatus == 200 || $httpStatus == 201 || $httpStatus == 422 || $httpStatus == 301 || $httpStatus == 302) {
+        if ($httpStatus == 200 || $httpStatus == 201 || $httpStatus == 204 || $httpStatus == 422 || $httpStatus == 301 || $httpStatus == 302) {
+            if ($httpStatus == 204) {
+                $result->setSuccess(1);
+            }
             return $result;
         }
 
-        Http::throwHttpStatusException($httpStatus, $result);
+        if(Configuration::getEnvironment() === 'sandbox') {
+            Http::throwHttpStatusException($httpStatus, $result);
+        } else {
+            try {
+                Http::throwHttpStatusException($httpStatus, $result);
+            } catch (RequestException|AuthException|NetworkException|ServerErrorException|ServerMaintenanceException|\Throwable $exception) {
+                $result->setError($exception->getMessage());
+            }
+            return $result;
+        }
     }
+
+
+
+
+    public function getVerificationId()
+    {
+        return $this->verificationId;
+    }
+
+    public function getSellerId()
+    {
+        return $this->sellerId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return bool
+     */
+    public function sellerIsVerified()
+    {
+        return 'STATUS_'.$this->status === Api::STATUS_POSITIVE;
+    }
+
+    /**
+     * @return bool
+     */
+    public function sellerIsNotVerified()
+    {
+        return 'STATUS_'.$this->status === Api::STATUS_NEGATIVE;
+    }
+
+    /**
+     * @return bool
+     */
+    public function sellerIsWaiting()
+    {
+        return 'STATUS_'.$this->status === Api::STATUS_WAITING_FOR_DATA
+            ||  'STATUS_'.$this->status === Api::STATUS_WAITING_FOR_VERIFICATION;
+    }
+
+    /**
+     * @return bool
+     */
+    public function sellerIsWaitingForData()
+    {
+        return 'STATUS_'.$this->status === Api::STATUS_WAITING_FOR_DATA;
+    }
+
+    /**
+     * @return bool
+     */
+    public function sellerIsWaitingForVerification()
+    {
+        return 'STATUS_'.$this->status === Api::STATUS_WAITING_FOR_VERIFICATION;
+    }
+
+
+
+
+
+
+
 }

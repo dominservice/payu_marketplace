@@ -13,13 +13,25 @@ namespace Dominservice\PayuMarketplace\AuthType;
 
 class TokenRequest implements AuthType
 {
+    private $headers = array(
+        'Content-Type: application/x-www-form-urlencoded',
+        'Accept: */*'
+    );
+
+    public function setHeader($key, $val)
+    {
+        $this->headers[$key] = $val;
+        return $this;
+    }
 
     public function getHeaders()
     {
-        return array(
-            'Content-Type: application/x-www-form-urlencoded',
-            'Accept: */*'
-        );
-    }
+        $headers = [];
 
+        foreach ($this->headers as $key=>$val) {
+            $headers[] = $key . ': ' . $val;
+        }
+
+        return $headers;
+    }
 }

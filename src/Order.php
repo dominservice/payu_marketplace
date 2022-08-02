@@ -16,8 +16,13 @@ use Dominservice\PayuMarketplace\Api\Http;
 use Dominservice\PayuMarketplace\Api\HttpCurl;
 use Dominservice\PayuMarketplace\Api\PayU;
 use Dominservice\PayuMarketplace\Api\Util;
+use Dominservice\PayuMarketplace\Exception\AuthException;
 use Dominservice\PayuMarketplace\Exception\ConfigException;
+use Dominservice\PayuMarketplace\Exception\NetworkException;
 use Dominservice\PayuMarketplace\Exception\PayuMarketplaceException;
+use Dominservice\PayuMarketplace\Exception\RequestException;
+use Dominservice\PayuMarketplace\Exception\ServerErrorException;
+use Dominservice\PayuMarketplace\Exception\ServerMaintenanceException;
 
 /**
  * Class OpenPayU_Order
@@ -63,7 +68,7 @@ class Order extends PayU
         }
 
         $pathUrl = Configuration::getServiceUrl() . self::ORDER_SERVICE;
-
+dump($pathUrl, $data, $authType);
         $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'OrderCreateResponse');
 
         return $result;
@@ -236,7 +241,16 @@ class Order extends PayU
             return $result;
         }
 
-        Http::throwHttpStatusException($httpStatus, $result);
+        if(Configuration::getEnvironment() === 'sandbox') {
+            Http::throwHttpStatusException($httpStatus, $result);
+        } else {
+            try {
+                Http::throwHttpStatusException($httpStatus, $result);
+            } catch (RequestException|AuthException|NetworkException|ServerErrorException|ServerMaintenanceException|\Throwable $exception) {
+                $result->setError($exception->getMessage());
+            }
+            return $result;
+        }
     }
 
     /**

@@ -17,10 +17,14 @@ use Dominservice\PayuMarketplace\Api\PayU;
 use Dominservice\PayuMarketplace\Api\Model\PayuShop;
 use Dominservice\PayuMarketplace\Api\Model\PayuShopBalance;
 use Dominservice\PayuMarketplace\Api\ResultError;
+use Dominservice\PayuMarketplace\Exception\AuthException;
 use Dominservice\PayuMarketplace\Exception\ConfigException;
+use Dominservice\PayuMarketplace\Exception\NetworkException;
 use Dominservice\PayuMarketplace\Exception\PayuMarketplaceException;
 use Dominservice\PayuMarketplace\AuthType\Oauth as AuthType_Oauth;
+use Dominservice\PayuMarketplace\Exception\RequestException;
 use Dominservice\PayuMarketplace\Exception\ServerErrorException;
+use Dominservice\PayuMarketplace\Exception\ServerMaintenanceException;
 
 class Shop extends PayU
 {
@@ -92,6 +96,15 @@ class Shop extends PayU
             ->setError($message['error'])
             ->setErrorDescription($message['error_description']);
 
-        Http::throwErrorHttpStatusException($httpStatus, $result);
+        if(Configuration::getEnvironment() === 'sandbox') {
+            Http::throwHttpStatusException($httpStatus, $result);
+        } else {
+            try {
+                Http::throwHttpStatusException($httpStatus, $result);
+            } catch (RequestException|AuthException|NetworkException|ServerErrorException|ServerMaintenanceException|\Throwable $exception) {
+                $result->setError($exception->getMessage());
+            }
+            return $result;
+        }
     }
 }

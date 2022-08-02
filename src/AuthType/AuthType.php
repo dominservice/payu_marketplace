@@ -13,6 +13,12 @@ namespace Dominservice\PayuMarketplace\AuthType;
 
 interface AuthType
 {
+    /**
+     * @param $key
+     * @param $val
+     * @return array
+     */
+    public function setHeader($key, $val);
 
     /**
      * @return array

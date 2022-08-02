@@ -20,6 +20,7 @@ class Oauth implements AuthType
      * @var OauthResultClientCredentials
      */
     private $oauthResult;
+    private $headers;
 
     public function __construct($clientId, $clientSecret)
     {
@@ -36,14 +37,28 @@ class Oauth implements AuthType
         } catch (PayuMarketplaceException $e) {
             throw new PayuMarketplaceException('Oauth error: [code=' . $e->getCode() . '], [message=' . $e->getMessage() . ']');
         }
+
+        $this->headers = [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => 'Bearer ' . $this->oauthResult->getAccessToken(),
+        ];
+    }
+
+    public function setHeader($key, $val)
+    {
+        $this->headers[$key] = $val;
+        return $this;
     }
 
     public function getHeaders()
     {
-        return array(
-            'Content-Type: application/json',
-            'Accept: application/json',
-            'Authorization: Bearer ' . $this->oauthResult->getAccessToken()
-        );
+        $headers = [];
+
+        foreach ($this->headers as $key=>$val) {
+            $headers[] = $key . ': ' . $val;
+        }
+
+        return $headers;
     }
 }

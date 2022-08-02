@@ -32,15 +32,28 @@ class Basic implements AuthType
         }
 
         $this->authBasicToken = base64_encode($posId . ':' . $signatureKey);
+
+        $this->headers = [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => 'Basic ' . $this->authBasicToken,
+        ];
+    }
+
+    public function setHeader($key, $val)
+    {
+        $this->headers[$key] = $val;
+        return $this;
     }
 
     public function getHeaders()
     {
-        return array(
-            'Content-Type: application/json',
-            'Accept: application/json',
-            'Authorization: Basic ' . $this->authBasicToken
-        );
-    }
+        $headers = [];
 
+        foreach ($this->headers as $key=>$val) {
+            $headers[] = $key . ': ' . $val;
+        }
+
+        return $headers;
+    }
 }

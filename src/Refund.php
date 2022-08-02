@@ -15,7 +15,12 @@ use Dominservice\PayuMarketplace\Api\Configuration;
 use Dominservice\PayuMarketplace\Api\Http;
 use Dominservice\PayuMarketplace\Api\PayU;
 use Dominservice\PayuMarketplace\Api\Util;
+use Dominservice\PayuMarketplace\Exception\AuthException;
+use Dominservice\PayuMarketplace\Exception\NetworkException;
 use Dominservice\PayuMarketplace\Exception\PayuMarketplaceException;
+use Dominservice\PayuMarketplace\Exception\RequestException;
+use Dominservice\PayuMarketplace\Exception\ServerErrorException;
+use Dominservice\PayuMarketplace\Exception\ServerMaintenanceException;
 
 class Refund extends PayU
 {
@@ -99,7 +104,16 @@ class Refund extends PayU
         if ($httpStatus == 200 || $httpStatus == 201 || $httpStatus == 422 || $httpStatus == 302) {
             return $result;
         } else {
-            Http::throwHttpStatusException($httpStatus, $result);
+            if(Configuration::getEnvironment() === 'sandbox') {
+                Http::throwHttpStatusException($httpStatus, $result);
+            } else {
+                try {
+                    Http::throwHttpStatusException($httpStatus, $result);
+                } catch (RequestException|AuthException|NetworkException|ServerErrorException|ServerMaintenanceException|\Throwable $exception) {
+                    $result->setError($exception->getMessage());
+                }
+                return $result;
+            }
         }
     }
 }

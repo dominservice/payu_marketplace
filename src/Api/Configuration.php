@@ -66,6 +66,16 @@ class Configuration
     private static $sellerDataEndpoint = '';
 
     /**
+     * Verification seller associates protocol - endpoint address
+     */
+    private static $sellerAssociatesEndpoint = '';
+
+    /**
+     * Verification seller associates protocol - endpoint address
+     */
+    private static $sellerFilesEndpoint = '';
+
+    /**
      * OAuth protocol - methods for token cache
      */
     private static $oauthTokenCache = null;
@@ -99,9 +109,13 @@ class Configuration
     const COMPOSER_JSON = "/composer.json";
     const DEFAULT_SDK_VERSION = 'PHP SDK 1.0.0';
     const OAUTH_CONTEXT = 'pl/standard/user/oauth/authorize';
+
+    const AML_VERIFICATION_CONTEXT = 'api/aml-verification/v1/';
     const VERIVICATION_CONTEXT = 'verification';
     const VERIVICATION_ADVICE_CONTEXT = 'verification-advice';
     const SELLER_DATA_CONTEXT = 'dataloading/seller';
+    const SELLER_ASSOCIATIES_CONTEXT = 'dataloading/associates';
+    const SELLER_FILES_CONTEXT = 'dataloading/files';
 
     /**
      * @return string
@@ -160,9 +174,11 @@ class Configuration
 
         self::$serviceUrl = $domain . $api . $version;
         self::$oauthEndpoint = $domain . self::OAUTH_CONTEXT;
-        self::$verificationEndpoint = $domain . self::VERIVICATION_CONTEXT;
-        self::$verificationAdviceEndpoint = $domain . self::VERIVICATION_ADVICE_CONTEXT;
-        self::$sellerDataEndpoint = $domain . self::SELLER_DATA_CONTEXT;
+        self::$verificationEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::VERIVICATION_CONTEXT;
+        self::$verificationAdviceEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::VERIVICATION_ADVICE_CONTEXT;
+        self::$sellerDataEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::SELLER_DATA_CONTEXT;
+        self::$sellerAssociatesEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::SELLER_ASSOCIATIES_CONTEXT;
+        self::$sellerFilesEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::SELLER_FILES_CONTEXT;
     }
 
     /**
@@ -203,6 +219,22 @@ class Configuration
     public static function getSellerDataEndpoint()
     {
         return self::$sellerDataEndpoint;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getSellerAssociatesEndpoint()
+    {
+        return self::$sellerAssociatesEndpoint;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getSellerFilesEndpoint()
+    {
+        return self::$sellerFilesEndpoint;
     }
 
     /**
