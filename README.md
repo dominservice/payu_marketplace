@@ -111,4 +111,22 @@ Usage
                 dump($sellerFile);
             }
         }
+
+
+
+//        $order = (new Marketplace())
+//            ->setNotifyUrl(route('payu_test_notify'))
+//            ->setCustomer(
+//                'biuro@dso.biz.pl',
+//                '555555555',
+//                'Tester',
+//                'Oblatywacz',
+//                'pl'
+//            )
+//            ->setSellerFee($sellerId, 10)
+//            ->setProduct($sellerId, 'Produkt testowy', 23, 5, date('Y-m-d'))
+//            ->setShippingMethods($sellerId, 'PL', 12, 'Przewożnik A')
+//            ->setCurrency('PLN')
+//            ->setDescription('bla bla blaS')
+//            ->createOrder(time());
 ```
