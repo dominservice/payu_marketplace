@@ -11,9 +11,9 @@
 
 namespace Dominservice\PayuMarketplace\Api;
 
+use Dominservice\PayuMarketplace\Api\Oauth\AuthType\Basic as AuthType_Basic;
+use Dominservice\PayuMarketplace\Api\Oauth\AuthType\Oauth as AuthType_Oauth;
 use Dominservice\PayuMarketplace\Exception\AuthException;
-use Dominservice\PayuMarketplace\AuthType\Oauth as AuthType_Oauth;
-use Dominservice\PayuMarketplace\AuthType\Basic as AuthType_Basic;
 
 class PayU
 {
@@ -84,8 +84,9 @@ class PayU
     }
 
     /**
-     * @return AuthType
-     * @throws OpenPayU_Exception
+     * @return AuthType_Basic|AuthType_Oauth
+     * @throws \Dominservice\PayuMarketplace\Exception\ConfigException
+     * @throws \Dominservice\PayuMarketplace\Exception\PayuMarketplaceException
      */
     protected static function getAuth()
     {
@@ -97,6 +98,4 @@ class PayU
 
         return $authType;
     }
-
-
 }

@@ -9,21 +9,10 @@
  * @version   1.0.0
  */
 
-namespace Dominservice\PayuMarketplace\AuthType;
+namespace Dominservice\PayuMarketplace\Api\Oauth;
 
-interface AuthType
+abstract class OauthGrantType
 {
-    /**
-     * @param $key
-     * @param $val
-     * @return array
-     */
-    public function setHeader($key, $val);
-
-    /**
-     * @return array
-     */
-    public function getHeaders();
-
-
+    const CLIENT_CREDENTIAL = 'client_credentials';
+    const TRUSTED_MERCHANT = 'trusted_merchant';
 }

@@ -9,7 +9,9 @@
  * @version   1.0.0
  */
 
-namespace Dominservice\PayuMarketplace\Api;
+namespace Dominservice\PayuMarketplace\Api\Oauth;
+
+use \DateTime;
 
 class OauthResultClientCredentials
 {

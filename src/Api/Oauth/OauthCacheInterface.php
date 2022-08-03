@@ -9,7 +9,7 @@
  * @version   1.0.0
  */
 
-namespace Dominservice\PayuMarketplace\Api;
+namespace Dominservice\PayuMarketplace\Api\Oauth;
 
 interface OauthCacheInterface
 {

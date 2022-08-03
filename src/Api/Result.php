@@ -212,16 +212,16 @@ class Result
 
     public function __call($methodName, $args) {
         if (preg_match('~^(set|get)([A-Z])(.*)$~', $methodName, $matches)) {
-            $property = Result . phpstrtolower($matches[2]);
+            $property = strtolower($matches[2]) . $matches[3];
             if (!property_exists($this, $property)) {
-                throw new Exception('Property ' . $property . ' not exists');
+                throw new \Exception('Property ' . $property . ' not exists');
             }
             switch($matches[1]) {
                 case 'get':
                     $this->checkArguments($args, 0, 0, $methodName);
                     return $this->get($property);
                 case 'default':
-                    throw new Exception('Method ' . $methodName . ' not exists');
+                    throw new \Exception('Method ' . $methodName . ' not exists');
             }
         }
     }

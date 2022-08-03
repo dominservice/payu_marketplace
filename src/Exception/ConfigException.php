@@ -11,7 +11,4 @@
 
 namespace Dominservice\PayuMarketplace\Exception;
 
-class ConfigException extends PayuMarketplaceException
-{
-
-}
+class ConfigException extends PayuMarketplaceException {}

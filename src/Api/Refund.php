@@ -9,12 +9,8 @@
  * @version   1.0.0
  */
 
-namespace Dominservice\PayuMarketplace;
+namespace Dominservice\PayuMarketplace\Api;
 
-use Dominservice\PayuMarketplace\Api\Configuration;
-use Dominservice\PayuMarketplace\Api\Http;
-use Dominservice\PayuMarketplace\Api\PayU;
-use Dominservice\PayuMarketplace\Api\Util;
 use Dominservice\PayuMarketplace\Exception\AuthException;
 use Dominservice\PayuMarketplace\Exception\NetworkException;
 use Dominservice\PayuMarketplace\Exception\PayuMarketplaceException;
@@ -25,14 +21,19 @@ use Dominservice\PayuMarketplace\Exception\ServerMaintenanceException;
 class Refund extends PayU
 {
     /**
-     * Function make refund for order
      * @param $orderId
      * @param $description
-     * @param null|int $amount Amount of refund in pennies
-     * @param null|string $extCustomerId Marketplace external customer ID
-     * @param null|string $extRefundId Marketplace external refund ID
-     * @return null|OpenPayU_Result
-     * @throws OpenPayU_Exception
+     * @param $amount
+     * @param $extCustomerId
+     * @param $extRefundId
+     * @return \Dominservice\PayuMarketplace\Api\Result|null
+     * @throws AuthException
+     * @throws NetworkException
+     * @throws PayuMarketplaceException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
+     * @throws \Dominservice\PayuMarketplace\Exception\ConfigException
      */
     public static function create($orderId, $description, $amount = null, $extCustomerId = null, $extRefundId = null)
     {
@@ -76,9 +77,14 @@ class Refund extends PayU
     }
 
     /**
-     * @param string $response
-     * @param string $messageName
-     * @return OpenPayU_Result
+     * @param $response
+     * @param $messageName
+     * @return \Dominservice\PayuMarketplace\Api\Result|void
+     * @throws AuthException
+     * @throws NetworkException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
      */
     public static function verifyResponse($response, $messageName='')
     {

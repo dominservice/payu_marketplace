@@ -1,56 +1,29 @@
 <?php
 
-namespace Dominservice\PayuMarketplace;
+namespace Dominservice\PayuMarketplace\Api;
 
-use Dominservice\PayuMarketplace\Api\Configuration;
-use Dominservice\PayuMarketplace\Api\Http;
-use Dominservice\PayuMarketplace\Api\PayU;
-use Dominservice\PayuMarketplace\Api\Util;
-use Dominservice\PayuMarketplace\Exception\AddressException;
+use Dominservice\PayuMarketplace\Api;
+use Dominservice\PayuMarketplace\Exception;
 use Dominservice\PayuMarketplace\Exception\AuthException;
-use Dominservice\PayuMarketplace\Exception\CompanyException;
-use Dominservice\PayuMarketplace\Exception\ContactException;
-use Dominservice\PayuMarketplace\Exception\LegalFormException;
 use Dominservice\PayuMarketplace\Exception\NetworkException;
 use Dominservice\PayuMarketplace\Exception\PayuMarketplaceException;
-use Dominservice\PayuMarketplace\Exception\PersonException;
 use Dominservice\PayuMarketplace\Exception\RequestException;
-use Dominservice\PayuMarketplace\Exception\SellerIdException;
 use Dominservice\PayuMarketplace\Exception\ServerErrorException;
 use Dominservice\PayuMarketplace\Exception\ServerMaintenanceException;
-use Dominservice\PayuMarketplace\Exception\VerificationIdException;
 
 
 class Verification extends PayU
 {
-    private $verificationId;
-    private $sellerId;
-    private $status;
-    private $companyName;
-    private $name;
-    private $surname;
-    private $taxId;
-    private $gusCode;
-    private $legalForm;
-    private $registryNumber;
-    private $registrationDate;
     /**
-     * @var array
-     */
-    private $address;
-    private $email;
-    private $phone;
-    private $personalIdentificationNumber;
-    private $dateOfBirth;
-
-
-
-
-    /**
-     * Checking Registration
-     *
      * @param $identificationNumber
-     * @return mixed|null
+     * @return Result|null
+     * @throws AuthException
+     * @throws Exception\ConfigException
+     * @throws NetworkException
+     * @throws PayuMarketplaceException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
      */
     public static function verificationAdvice($identificationNumber)
     {
@@ -67,11 +40,15 @@ class Verification extends PayU
     }
 
     /**
-     * Initializing Verification
-     *
-     * @param array $seller
-     * @return object $result Response array with $seller InitializeVerificationResponse
+     * @param $seller
+     * @return Result|null
+     * @throws AuthException
+     * @throws Exception\ConfigException
+     * @throws NetworkException
      * @throws PayuMarketplaceException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
      */
     public static function initializingVerification($seller)
     {
@@ -94,11 +71,15 @@ class Verification extends PayU
     }
 
     /**
-     * Initializing Verification
-     *
-     * @param array $seller
-     * @return object $result Response array with $seller InitializeVerificationResponse
+     * @param $seller
+     * @return Result|null
+     * @throws AuthException
+     * @throws Exception\ConfigException
+     * @throws NetworkException
      * @throws PayuMarketplaceException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
      */
     public static function setSellerData($seller)
     {
@@ -114,20 +95,24 @@ class Verification extends PayU
             throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
         }
 
-        $pathUrl = Configuration::getSellerDataEndpoint();
+        $pathUrl = Configuration::getDataloadingEndpoint() . '/seller';
         $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'SellerDataResponse');
 
         return $result;
     }
 
     /**
-     * Initializing Verification
-     *
-     * @param array $seller
-     * @return object $result Response array with $seller InitializeVerificationResponse
+     * @param $associate
+     * @return Result|null
+     * @throws AuthException
+     * @throws Exception\ConfigException
+     * @throws NetworkException
      * @throws PayuMarketplaceException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
      */
-    public static function setSellerAssociates($associate)
+    public static function setAssociates($associate)
     {
         $data = Util::buildJsonFromArray($associate);
 
@@ -141,37 +126,96 @@ class Verification extends PayU
             throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
         }
 
-        $pathUrl = Configuration::getSellerAssociatesEndpoint();
+        $pathUrl = Configuration::getDataloadingEndpoint() . '/associates';
         $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'SellerAssociatesResponse');
 
         return $result;
     }
 
     /**
-     * Initializing Verification
-     *
-     * @param array $seller
-     * @return object $result Response array with $seller InitializeVerificationResponse
+     * @param $data
+     * @return Result|null
+     * @throws AuthException
+     * @throws Exception\ConfigException
+     * @throws NetworkException
      * @throws PayuMarketplaceException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
      */
-    public static function setSellerFile($data, $filesize)
+    public static function setSellerFile($data)
     {
-//        $data = Util::buildJsonFromArray($file);
-
-//        if (empty($data)) {
-//            throw new PayuMarketplaceException('Empty message SellerFileResponse');
-//        }
-
         try {
             $authType = self::getAuth();
             $authType->setHeader('Content-Type', 'multipart/form-data');
-//            $authType->setHeader('Content-Length', $filesize);
         } catch (PayuMarketplaceException $e) {
             throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
         }
 
-        $pathUrl = Configuration::getSellerAssociatesEndpoint();
+        $pathUrl = Configuration::getDataloadingEndpoint() . '/files';
         $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'SellerFileResponse');
+
+        return $result;
+    }
+
+    /**
+     * @param $documents
+     * @return Result|null
+     * @throws AuthException
+     * @throws Exception\ConfigException
+     * @throws NetworkException
+     * @throws PayuMarketplaceException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
+     */
+    public static function setSellerDocuments($documents)
+    {
+        $data = Util::buildJsonFromArray($documents);
+
+        if (empty($data)) {
+            throw new PayuMarketplaceException('Empty message SellerDocumentsResponse');
+        }
+
+        try {
+            $authType = self::getAuth();
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
+        }
+
+        $pathUrl = Configuration::getDataloadingEndpoint() . '/seller/documents';
+        $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'SellerDocumentsResponse');
+
+        return $result;
+    }
+
+    /**
+     * @param $documents
+     * @return Result|null
+     * @throws AuthException
+     * @throws Exception\ConfigException
+     * @throws NetworkException
+     * @throws PayuMarketplaceException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
+     */
+    public static function setAssociatesDocuments($documents)
+    {
+        $data = Util::buildJsonFromArray($documents);
+
+        if (empty($data)) {
+            throw new PayuMarketplaceException('Empty message AssociatesDocumentsResponse');
+        }
+
+        try {
+            $authType = self::getAuth();
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
+        }
+
+        $pathUrl = Configuration::getDataloadingEndpoint() . '/associates/documents';
+        $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'AssociatesDocumentsResponse');
 
         return $result;
     }
@@ -235,73 +279,4 @@ class Verification extends PayU
             return $result;
         }
     }
-
-
-
-
-    public function getVerificationId()
-    {
-        return $this->verificationId;
-    }
-
-    public function getSellerId()
-    {
-        return $this->sellerId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * @return bool
-     */
-    public function sellerIsVerified()
-    {
-        return 'STATUS_'.$this->status === Api::STATUS_POSITIVE;
-    }
-
-    /**
-     * @return bool
-     */
-    public function sellerIsNotVerified()
-    {
-        return 'STATUS_'.$this->status === Api::STATUS_NEGATIVE;
-    }
-
-    /**
-     * @return bool
-     */
-    public function sellerIsWaiting()
-    {
-        return 'STATUS_'.$this->status === Api::STATUS_WAITING_FOR_DATA
-            ||  'STATUS_'.$this->status === Api::STATUS_WAITING_FOR_VERIFICATION;
-    }
-
-    /**
-     * @return bool
-     */
-    public function sellerIsWaitingForData()
-    {
-        return 'STATUS_'.$this->status === Api::STATUS_WAITING_FOR_DATA;
-    }
-
-    /**
-     * @return bool
-     */
-    public function sellerIsWaitingForVerification()
-    {
-        return 'STATUS_'.$this->status === Api::STATUS_WAITING_FOR_VERIFICATION;
-    }
-
-
-
-
-
-
-
 }

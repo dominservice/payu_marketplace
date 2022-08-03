@@ -94,7 +94,7 @@ class Http
 
         $response = $message->getResponse();
         $statusDesc = isset($response->status->statusDesc) ? $response->status->statusDesc : '';
-//dump($response);
+
         switch ($statusCode) {
             case 400:
                 throw new RequestException($message, $message->getStatus().' - '.$statusDesc, $statusCode);
@@ -114,10 +114,6 @@ class Http
                 break;
 
             case 500:
-
-
-                dump($response, $statusCode, $statusDesc, $message);
-
                 throw new ServerErrorException('PayU system is unavailable or your order is not processed.
                 Error:
                 [' . $statusDesc . ']', $statusCode);
@@ -128,7 +124,6 @@ class Http
                 break;
 
             default:
-                dump(['test', $response, $statusCode]);
                 throw new NetworkException('Unexpected HTTP code response', $statusCode);
                 break;
 

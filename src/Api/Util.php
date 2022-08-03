@@ -16,15 +16,11 @@ use Dominservice\PayuMarketplace\Exception\ConfigException;
 class Util
 {
     /**
-     * Function generate sign data
-     *
      * @param array $data
-     * @param string $algorithm
-     * @param string $merchantPosId
-     * @param string $signatureKey
-     *
+     * @param $algorithm
+     * @param $merchantPosId
+     * @param $signatureKey
      * @return string
-     *
      * @throws ConfigException
      */
     public static function generateSignData(array $data, $algorithm = 'SHA-256', $merchantPosId = '', $signatureKey = '')
@@ -61,11 +57,8 @@ class Util
     }
 
     /**
-     * Function returns signature data object
-     *
-     * @param string $data
-     *
-     * @return null|array
+     * @param $data
+     * @return array|null
      */
     public static function parseSignature($data)
     {
@@ -92,13 +85,10 @@ class Util
     }
 
     /**
-     * Function returns signature validate
-     *
-     * @param string $message
-     * @param string $signature
-     * @param string $signatureKey
-     * @param string $algorithm
-     *
+     * @param $message
+     * @param $signature
+     * @param $signatureKey
+     * @param $algorithm
      * @return bool
      */
     public static function verifySignature($message, $signature, $signatureKey, $algorithm = 'MD5')
@@ -121,12 +111,9 @@ class Util
     }
 
     /**
-     * Function builds OpenPayU Json Document
-     *
-     * @param array $data
-     * @param string $rootElement
-     *
-     * @return null|string
+     * @param $data
+     * @param $rootElement
+     * @return false|string|null
      */
     public static function buildJsonFromArray($data, $rootElement = '')
     {
@@ -144,8 +131,8 @@ class Util
     }
 
     /**
-     * @param string $data
-     * @param bool $assoc
+     * @param $data
+     * @param $assoc
      * @return mixed|null
      */
     public static function convertJsonToArray($data, $assoc = false)
@@ -158,8 +145,8 @@ class Util
     }
 
     /**
-     * @param array $array
-     * @return bool|stdClass
+     * @param $array
+     * @return array|false|mixed|\stdClass
      */
     public static function parseArrayToObject($array)
     {
@@ -191,7 +178,7 @@ class Util
     }
 
     /**
-     * @return mixed
+     * @return array|false
      */
     public static function getRequestHeaders()
     {
@@ -211,8 +198,8 @@ class Util
 
     /**
      * @param $array
-     * @param string $namespace
-     * @param array $outputFields
+     * @param $namespace
+     * @param $outputFields
      * @return string
      */
     public static function convertArrayToHtmlForm($array, $namespace = '', &$outputFields = [])
@@ -252,7 +239,7 @@ class Util
     }
 
     /**
-     * @param array $data
+     * @param $data
      * @return array
      */
     private static function setSenderProperty($data)
@@ -264,6 +251,10 @@ class Util
         return $data;
     }
 
+    /**
+     * @param $response
+     * @return string
+     */
     public static function statusDesc($response)
     {
         $msg = '';

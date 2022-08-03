@@ -9,13 +9,10 @@
  * @version   1.0.0
  */
 
-namespace Dominservice\PayuMarketplace;
+namespace Dominservice\PayuMarketplace\Api;
 
-use Dominservice\PayuMarketplace\Api\Configuration;
-use Dominservice\PayuMarketplace\Api\Http;
-use Dominservice\PayuMarketplace\Api\HttpCurl;
-use Dominservice\PayuMarketplace\Api\PayU;
-use Dominservice\PayuMarketplace\Api\Util;
+use Dominservice\PayuMarketplace\Api;
+use Dominservice\PayuMarketplace\Exception;
 use Dominservice\PayuMarketplace\Exception\AuthException;
 use Dominservice\PayuMarketplace\Exception\ConfigException;
 use Dominservice\PayuMarketplace\Exception\NetworkException;
@@ -68,7 +65,7 @@ class Order extends PayU
         }
 
         $pathUrl = Configuration::getServiceUrl() . self::ORDER_SERVICE;
-dump($pathUrl, $data, $authType);
+
         $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'OrderCreateResponse');
 
         return $result;
@@ -159,7 +156,7 @@ dump($pathUrl, $data, $authType);
      * - Sends to PayU OrderStatusUpdateRequest
      *
      * @param array $orderStatusUpdate A array containing full OrderStatus
-     * @return OApi\Result $result Response array with OrderStatusUpdateResponse
+     * @return Api\Result $result Response array with OrderStatusUpdateResponse
      * @throws PayuMarketplaceException
      */
     public static function statusUpdate($orderStatusUpdate)

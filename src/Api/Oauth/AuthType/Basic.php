@@ -9,7 +9,7 @@
  * @version   1.0.0
  */
 
-namespace Dominservice\PayuMarketplace\AuthType;
+namespace Dominservice\PayuMarketplace\Api\Oauth\AuthType;
 
 use Dominservice\PayuMarketplace\Exception\ConfigException;
 

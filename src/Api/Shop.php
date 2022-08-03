@@ -9,19 +9,16 @@
  * @version   1.0.0
  */
 
-namespace Dominservice\PayuMarketplace;
+namespace Dominservice\PayuMarketplace\Api;
 
-use Dominservice\PayuMarketplace\Api\Configuration;
-use Dominservice\PayuMarketplace\Api\Http;
-use Dominservice\PayuMarketplace\Api\PayU;
 use Dominservice\PayuMarketplace\Api\Model\PayuShop;
 use Dominservice\PayuMarketplace\Api\Model\PayuShopBalance;
-use Dominservice\PayuMarketplace\Api\ResultError;
+use Dominservice\PayuMarketplace\Api\Oauth\AuthType\Oauth as AuthType_Oauth;
+use Dominservice\PayuMarketplace\Exception;
 use Dominservice\PayuMarketplace\Exception\AuthException;
 use Dominservice\PayuMarketplace\Exception\ConfigException;
 use Dominservice\PayuMarketplace\Exception\NetworkException;
 use Dominservice\PayuMarketplace\Exception\PayuMarketplaceException;
-use Dominservice\PayuMarketplace\AuthType\Oauth as AuthType_Oauth;
 use Dominservice\PayuMarketplace\Exception\RequestException;
 use Dominservice\PayuMarketplace\Exception\ServerErrorException;
 use Dominservice\PayuMarketplace\Exception\ServerMaintenanceException;
@@ -31,12 +28,15 @@ class Shop extends PayU
     const SHOPS_SERVICE = 'shops';
 
     /**
-     * Retrieving shop data
      * @param $publicShopId
-     * @return PayuShop
+     * @return PayuShop|ResultError|null
+     * @throws AuthException
      * @throws ConfigException
-     * @throws Exception\NetworkException
+     * @throws NetworkException
      * @throws PayuMarketplaceException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
      */
     public static function get($publicShopId)
     {
@@ -57,11 +57,13 @@ class Shop extends PayU
 
     /**
      * @param $response
-     * @return PayuShop|void
-     * @throws Exception\NetworkException
-     * @throws Exception\ServerMaintenanceException
+     * @return PayuShop|ResultError|void
+     * @throws AuthException
+     * @throws NetworkException
      * @throws PayuMarketplaceException
+     * @throws RequestException
      * @throws ServerErrorException
+     * @throws ServerMaintenanceException
      */
     public static function verifyResponse($response)
     {

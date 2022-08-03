@@ -9,9 +9,13 @@
  * @version   1.0.0
  */
 
-namespace Dominservice\PayuMarketplace\Api;
+namespace Dominservice\PayuMarketplace\Api\Oauth;
 
-use Dominservice\PayuMarketplace\AuthType\TokenRequest as AuthType_TokenRequest;
+use Dominservice\PayuMarketplace\Api\Configuration;
+use Dominservice\PayuMarketplace\Api\Http;
+use Dominservice\PayuMarketplace\Api\Oauth\AuthType\TokenRequest as AuthType_TokenRequest;
+use Dominservice\PayuMarketplace\Api\ResultError;
+use Dominservice\PayuMarketplace\Api\Util;
 use Dominservice\PayuMarketplace\Exception\ServerErrorException;
 
 class Oauth
@@ -26,10 +30,12 @@ class Oauth
     /**
      * @param $clientId
      * @param $clientSecret
-     * @return OauthResultClientCredentials|void
+     * @return OauthResultClientCredentials|null
      * @throws ServerErrorException
      * @throws \Dominservice\PayuMarketplace\Exception\ConfigException
      * @throws \Dominservice\PayuMarketplace\Exception\NetworkException
+     * @throws \Dominservice\PayuMarketplace\Exception\PayuMarketplaceException
+     * @throws \Dominservice\PayuMarketplace\Exception\ServerMaintenanceException
      */
     public static function getAccessToken($clientId = null, $clientSecret = null)
     {
@@ -57,10 +63,12 @@ class Oauth
     /**
      * @param $clientId
      * @param $clientSecret
-     * @return OauthResultClientCredentials|void
+     * @return OauthResultClientCredentials|null
      * @throws ServerErrorException
      * @throws \Dominservice\PayuMarketplace\Exception\ConfigException
      * @throws \Dominservice\PayuMarketplace\Exception\NetworkException
+     * @throws \Dominservice\PayuMarketplace\Exception\PayuMarketplaceException
+     * @throws \Dominservice\PayuMarketplace\Exception\ServerMaintenanceException
      */
     private static function retrieveAccessToken($clientId, $clientSecret)
     {
@@ -82,14 +90,12 @@ class Oauth
     }
 
     /**
-     * Parse response from PayU
-     *
      * @param $response
      * @return OauthResultClientCredentials|void
-     * @throws Exception\NetworkException
-     * @throws Exception\PayuMarketplaceException
-     * @throws Exception\ServerMaintenanceException
      * @throws ServerErrorException
+     * @throws \Dominservice\PayuMarketplace\Exception\NetworkException
+     * @throws \Dominservice\PayuMarketplace\Exception\PayuMarketplaceException
+     * @throws \Dominservice\PayuMarketplace\Exception\ServerMaintenanceException
      */
     private static function parseResponse($response)
     {
@@ -127,6 +133,7 @@ class Oauth
 
     /**
      * @return void
+     * @throws \Dominservice\PayuMarketplace\Exception\ConfigException
      */
     private static function getOauthTokenCache()
     {

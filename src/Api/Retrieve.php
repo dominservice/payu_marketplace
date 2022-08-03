@@ -9,13 +9,9 @@
  * @version   1.0.0
  */
 
-namespace Dominservice\PayuMarketplace;
+namespace Dominservice\PayuMarketplace\Api;
 
-use Dominservice\PayuMarketplace\Api\Configuration;
-use Dominservice\PayuMarketplace\Api\Http;
-use Dominservice\PayuMarketplace\Api\PayU;
-use Dominservice\PayuMarketplace\Api\Util;
-use Dominservice\PayuMarketplace\AuthType\Oauth as AuthType_Oauth;
+use Dominservice\PayuMarketplace\Api\Oauth\AuthType\Oauth as AuthType_Oauth;
 use Dominservice\PayuMarketplace\Exception\AuthException;
 use Dominservice\PayuMarketplace\Exception\ConfigException;
 use Dominservice\PayuMarketplace\Exception\NetworkException;
@@ -30,12 +26,15 @@ class Retrieve extends PayU
     const PAYMETHODS_SERVICE = 'paymethods';
 
     /**
-     * Get Pay Methods from POS
      * @param $lang
-     * @return OpenPayU_Result|null
+     * @return Result|null
+     * @throws AuthException
      * @throws ConfigException
-     * @throws Exception\NetworkException
+     * @throws NetworkException
      * @throws PayuMarketplaceException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
      */
     public static function payMethods($lang = null)
     {
@@ -60,8 +59,13 @@ class Retrieve extends PayU
     }
 
     /**
-     * @param string $response
-     * @return null|Api\Result
+     * @param $response
+     * @return Result|void
+     * @throws AuthException
+     * @throws NetworkException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
      */
     public static function verifyResponse($response)
     {

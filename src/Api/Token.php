@@ -9,12 +9,12 @@
  * @version   1.0.0
  */
 
-namespace Dominservice\PayuMarketplace;
+namespace Dominservice\PayuMarketplace\Api;
 
-use Dominservice\PayuMarketplace\Api\Configuration;
-use Dominservice\PayuMarketplace\Api\Http;
-use Dominservice\PayuMarketplace\Api\PayU;
-use Dominservice\PayuMarketplace\Api\Util;
+use Dominservice\PayuMarketplace\Api;
+use Dominservice\PayuMarketplace\Api\Oauth\AuthType\Oauth as AuthType_Oauth;
+use Dominservice\PayuMarketplace\Api\Oauth\OauthGrantType;
+use Dominservice\PayuMarketplace\Exception;
 use Dominservice\PayuMarketplace\Exception\AuthException;
 use Dominservice\PayuMarketplace\Exception\ConfigException;
 use Dominservice\PayuMarketplace\Exception\NetworkException;
@@ -29,20 +29,22 @@ class Token extends PayU
     const TOKENS_SERVICE = 'tokens';
 
     /**
-     * Deleting a payment token
-     *
      * @param $token
-     * @return OpenPayU_Result|null
+     * @return Result|null
+     * @throws AuthException
      * @throws ConfigException
-     * @throws Exception\NetworkException
+     * @throws NetworkException
      * @throws PayuMarketplaceException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
      */
     public static function delete($token)
     {
 
         try {
             $authType = self::getAuth();
-        } catch (OpenPayU_Exception $e) {
+        } catch (PayuMarketplaceException $e) {
             throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
         }
 
@@ -63,12 +65,12 @@ class Token extends PayU
 
     /**
      * @param $response
-     * @return null|Api\Result
-     * @throws Exception\AuthException
-     * @throws Exception\NetworkException
-     * @throws Exception\RequestException
-     * @throws Exception\ServerErrorException
-     * @throws Exception\ServerMaintenanceException
+     * @return Result|null
+     * @throws AuthException
+     * @throws NetworkException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
      */
     public static function verifyResponse($response)
     {
@@ -102,5 +104,7 @@ class Token extends PayU
                 return $result;
             }
         }
+
+        return null;
     }
 }

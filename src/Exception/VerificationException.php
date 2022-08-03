@@ -2,7 +2,4 @@
 
 namespace Dominservice\PayuMarketplace\Exception;
 
-class VerificationException extends PayuMarketplaceException
-{
-
-}
+class VerificationException extends PayuMarketplaceException {}

@@ -9,7 +9,7 @@
  * @version   1.0.0
  */
 
-namespace Dominservice\PayuMarketplace\Api;
+namespace Dominservice\PayuMarketplace\Api\Oauth;
 
 use Dominservice\PayuMarketplace\Exception\ConfigException;
 
@@ -29,7 +29,7 @@ class OauthCacheMemcached implements OauthCacheInterface
             throw new ConfigException('PHP Memcached extension not installed.');
         }
 
-        $this->memcached = new Memcached('PayU');
+        $this->memcached = new \Memcached('PayU');
         $this->memcached->addServer($host, $port, $weight);
         $stats = $this->memcached->getStats();
         if ($stats[$host . ':' . $port]['pid'] == -1) {

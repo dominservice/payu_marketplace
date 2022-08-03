@@ -2,6 +2,8 @@
 
 namespace Dominservice\PayuMarketplace\Api;
 
+use Dominservice\PayuMarketplace\Api\Oauth\OauthCacheInterface;
+use Dominservice\PayuMarketplace\Api\Oauth\OauthGrantType;
 use Dominservice\PayuMarketplace\Exception\ConfigException;
 
 class Configuration
@@ -61,19 +63,9 @@ class Configuration
     private static $verificationAdviceEndpoint = '';
 
     /**
-     * Verification seller data protocol - endpoint address
+     * Verification dataloading protocol - endpoint address
      */
-    private static $sellerDataEndpoint = '';
-
-    /**
-     * Verification seller associates protocol - endpoint address
-     */
-    private static $sellerAssociatesEndpoint = '';
-
-    /**
-     * Verification seller associates protocol - endpoint address
-     */
-    private static $sellerFilesEndpoint = '';
+    private static $dataloadingEndpoint = '';
 
     /**
      * OAuth protocol - methods for token cache
@@ -113,9 +105,7 @@ class Configuration
     const AML_VERIFICATION_CONTEXT = 'api/aml-verification/v1/';
     const VERIVICATION_CONTEXT = 'verification';
     const VERIVICATION_ADVICE_CONTEXT = 'verification-advice';
-    const SELLER_DATA_CONTEXT = 'dataloading/seller';
-    const SELLER_ASSOCIATIES_CONTEXT = 'dataloading/associates';
-    const SELLER_FILES_CONTEXT = 'dataloading/files';
+    const DATALOADING_CONTEXT = 'dataloading';
 
     /**
      * @return string
@@ -176,9 +166,7 @@ class Configuration
         self::$oauthEndpoint = $domain . self::OAUTH_CONTEXT;
         self::$verificationEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::VERIVICATION_CONTEXT;
         self::$verificationAdviceEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::VERIVICATION_ADVICE_CONTEXT;
-        self::$sellerDataEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::SELLER_DATA_CONTEXT;
-        self::$sellerAssociatesEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::SELLER_ASSOCIATIES_CONTEXT;
-        self::$sellerFilesEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::SELLER_FILES_CONTEXT;
+        self::$dataloadingEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::DATALOADING_CONTEXT;
     }
 
     /**
@@ -216,25 +204,9 @@ class Configuration
     /**
      * @return string
      */
-    public static function getSellerDataEndpoint()
+    public static function getDataloadingEndpoint()
     {
-        return self::$sellerDataEndpoint;
-    }
-
-    /**
-     * @return string
-     */
-    public static function getSellerAssociatesEndpoint()
-    {
-        return self::$sellerAssociatesEndpoint;
-    }
-
-    /**
-     * @return string
-     */
-    public static function getSellerFilesEndpoint()
-    {
-        return self::$sellerFilesEndpoint;
+        return self::$dataloadingEndpoint;
     }
 
     /**

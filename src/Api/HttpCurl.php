@@ -39,24 +39,14 @@ class HttpCurl
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $auth->getHeaders());
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'OpenPayU_HttpCurl::readHeader');
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'HttpCurl::readHeader');
         if ($data) {
-            if (!empty($data['__file_size__'])) {
-                curl_setopt($ch, CURLOPT_INFILESIZE, $data['__file_size__']);
-                curl_setopt($ch, CURLOPT_HTTP_VERSION,  CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
-
-
-                dump($auth->getHeaders());
-
-                unset($data['__file_size__']);
-            }
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-//        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
 
         if ($proxy = self::getProxy()) {
             curl_setopt($ch, CURLOPT_PROXY, $proxy);

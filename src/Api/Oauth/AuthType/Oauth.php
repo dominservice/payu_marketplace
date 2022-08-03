@@ -9,8 +9,9 @@
  * @version   1.0.0
  */
 
-namespace Dominservice\PayuMarketplace\AuthType;
+namespace Dominservice\PayuMarketplace\Api\Oauth\AuthType;
 
+use Dominservice\PayuMarketplace\Api\Oauth\OauthResultClientCredentials;
 use Dominservice\PayuMarketplace\Exception\ConfigException;
 use Dominservice\PayuMarketplace\Exception\PayuMarketplaceException;
 
@@ -33,7 +34,7 @@ class Oauth implements AuthType
         }
 
         try {
-            $this->oauthResult = \Dominservice\PayuMarketplace\Api\Oauth::getAccessToken();
+            $this->oauthResult = \Dominservice\PayuMarketplace\Api\Oauth\Oauth::getAccessToken();
         } catch (PayuMarketplaceException $e) {
             throw new PayuMarketplaceException('Oauth error: [code=' . $e->getCode() . '], [message=' . $e->getMessage() . ']');
         }
