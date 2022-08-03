@@ -2,7 +2,7 @@
 Library for PAYU Marketplace
 
 This library is based on "openpay/openpay"
-The seller verification elements for the market place have been added, as well as the marketplace service itself.
+The seller verification elements for the marketplace have been added, as well as the marketplace service itself.
 
 __The library is currently under construction, please check back, it will be ready soon.__
 
@@ -21,7 +21,20 @@ Usage
 # TEST
 
 ```php
- $sellerId = 'dso_seller_test';
+use Dominservice\PayuMarketplace\Api\Configuration;
+use Dominservice\PayuMarketplace\Api\Oauth\OauthCacheFile;
+use Dominservice\PayuMarketplace\Api\Oauth\OauthGrantType;
+use Dominservice\PayuMarketplace\Api\PayU;
+use Dominservice\PayuMarketplace\Exception\ConfigException;
+use Dominservice\PayuMarketplace\Exception\PayuMarketplaceException;
+use Dominservice\PayuMarketplace\Exception\VerificationException;
+use Dominservice\PayuMarketplace\Marketplace;
+use Dominservice\PayuMarketplace\Api\Verification;
+use Dominservice\PayuMarketplace\Seller;
+
+(...)
+
+        $sellerId = 'dso_seller_test';
         $verificationId = null;
         $verificationStatus = null;
         //set Sandbox Environment
@@ -41,7 +54,7 @@ Usage
         
         Configuration::setOauthTokenCache(new OauthCacheFile(storage_path('payu_cache')));
 
-        $sellerInfo = (new Marketplace())->initializingVerification($sellerId);
+        $sellerInfo = (new Seller())->initializingVerification($sellerId);
         $response = $sellerInfo->getResponse();
         if (!empty($response->verificationId)) {
             $verificationId = $response->verificationId;
@@ -51,7 +64,7 @@ Usage
         }
 
         if ($verificationId && $verificationStatus === 'WAITING_FOR_DATA') {
-            $sellerVerification = (new Marketplace())
+            $sellerVerification = (new Seller())
                 ->setAddress('PL', 'Zatylna 23/3', '00-001', 'Testowo')
                 ->setVerificationId($verificationId)
                 ->setSellerId($sellerId)
@@ -70,7 +83,7 @@ Usage
 
             if (!$sellerVerification->getError()) {
                 $associateId = $this->uuid();
-                $sellerAssociates = (new Marketplace())
+                $sellerAssociates = (new Seller())
                     ->setVerificationId($verificationId)
                     ->setAssociateId($associateId)
                     ->setAssociateType('REPRESENTATIVE')
@@ -104,7 +117,7 @@ Usage
 
 
                 $sellerFile = [];
-                $sellerFile[] = (new Marketplace())
+                $sellerFile[] = (new Seller())
                     ->setVerificationId($verificationId)
                     ->setSellerFile($filename, $cFile, $filesize);
 
