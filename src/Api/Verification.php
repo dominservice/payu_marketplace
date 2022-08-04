@@ -34,7 +34,7 @@ class Verification extends PayU
         }
 
         $pathUrl = Configuration::getVerificationAdviceEndpoint() . '/' . $identificationNumber;
-        $result = self::verifyResponse(Http::doGet($pathUrl, $authType), 'VerificationAdviceResponse');
+        $result = self::verifyResponse(Http::doGet($pathUrl, $authType), 'VerificationAdviceResponse', 'GET');
 
         return $result;
     }
@@ -66,6 +66,20 @@ class Verification extends PayU
 
         $pathUrl = Configuration::getVerificationEndpoint();
         $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'InitializeVerificationResponse');
+
+        return $result;
+    }
+
+    public static function getVerification($verificationId)
+    {
+        try {
+            $authType = self::getAuth();
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
+        }
+
+        $pathUrl = Configuration::getVerificationEndpoint() . '?id=' . $verificationId;
+        $result = self::verifyResponse(Http::doGet($pathUrl, $authType), 'VerificationResponse', 'GET');
 
         return $result;
     }
@@ -330,7 +344,7 @@ class Verification extends PayU
 
         return $result;
     }
-    
+
     /**
      * Verify response from PayU
      *
@@ -343,21 +357,26 @@ class Verification extends PayU
      * @throws Exception\ServerErrorException
      * @throws Exception\ServerMaintenanceException
      */
-    public static function verifyResponse($response, $messageName)
+    public static function verifyResponse($response, $messageName, $requestType = null)
     {
         $data = array();
-        $httpStatus = $response['code'];
-        $message = Util::convertJsonToArray($response['response'], true);
-        $data['status'] = isset($message['status']['statusCode']) ? $message['status']['statusCode'] : null;
+        if ($requestType === 'GET') {
+            $data['status'] = null;
+            $data['response'] = $response;
+        } else {
+            $httpStatus = $response['code'];
+            $message = Util::convertJsonToArray($response['response'], true);
+            $data['status'] = isset($message['status']['statusCode']) ? $message['status']['statusCode'] : null;
 
-        if (json_last_error() == JSON_ERROR_SYNTAX) {
-            $data['response'] = $response['response'];
-        } elseif (isset($message[$messageName])) {
-            unset($message[$messageName]['Status']);
-            $data['response'] = $message[$messageName];
-        } elseif (isset($message)) {
-            $data['response'] = $message;
-            unset($message['status']);
+            if (json_last_error() == JSON_ERROR_SYNTAX) {
+                $data['response'] = $response['response'];
+            } elseif (isset($message[$messageName])) {
+                unset($message[$messageName]['Status']);
+                $data['response'] = $message[$messageName];
+            } elseif (isset($message)) {
+                $data['response'] = $message;
+                unset($message['status']);
+            }
         }
 
         $result = self::build($data);

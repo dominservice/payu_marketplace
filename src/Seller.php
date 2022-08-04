@@ -8,55 +8,55 @@ use Dominservice\PayuMarketplace\Exception\VerificationException;
 
 class Seller
 {
-    private $associateId;
-    private $associateType;
-    private $associateName;
-    private $associateSurname;
-    private $associateCitizenship;
-    private $associateIdentityNumber;
-    private $associateBirthDate;
-    private $associateCountryOfBirth;
-
-    private $documentId;
-    private $documentType;
-    private $files = [];
-    private $translationFiles = [];
-    private $verificationId;
-    private $sellerId;
-    private $companyName;
-    private $name;
-    private $surname;
-    private $taxId;
-    private $legalForm;
-    private $gusCode;
-    private $registryNumber;
-    private $registrationDate;
-    /**
-     * @var string[]
-     */
-    private $address;
-    private $email;
-    private $phone;
-    private $personalIdentificationNumber;
-    private $dateOfBirth;
-    /**
-     * @var string
-     */
-    private $documentNumber;
-    private $issueDate;
-    private $expireDate;
-    private $hasDocument;
-    private $swiftCode;
-    private $payoutDataVerificationType;
-    private $bankName;
-    private $bankAddress;
-    private $bankCountry;
-    private $accountNumberFromBank;
-    private $ownerName;
-    private $foreign;
-    private $paymentId;
-    private $verified;
-    private $verificationTransferId;
+//    private $associateId;
+//    private $associateType;
+//    private $associateName;
+//    private $associateSurname;
+//    private $associateCitizenship;
+//    private $associateIdentityNumber;
+//    private $associateBirthDate;
+//    private $associateCountryOfBirth;
+//
+//    private $documentId;
+//    private $documentType;
+//    private $files = [];
+//    private $translationFiles = [];
+//    private $verificationId;
+//    private $sellerId;
+//    private $companyName;
+//    private $name;
+//    private $surname;
+//    private $taxId;
+//    private $legalForm;
+//    private $gusCode;
+//    private $registryNumber;
+//    private $registrationDate;
+//    /**
+//     * @var string[]
+//     */
+//    private $address;
+//    private $email;
+//    private $phone;
+//    private $personalIdentificationNumber;
+//    private $dateOfBirth;
+//    /**
+//     * @var string
+//     */
+//    private $documentNumber;
+//    private $issueDate;
+//    private $expireDate;
+//    private $hasDocument;
+//    private $swiftCode;
+//    private $payoutDataVerificationType;
+//    private $bankName;
+//    private $bankAddress;
+//    private $bankCountry;
+//    private $accountNumberFromBank;
+//    private $ownerName;
+//    private $foreign;
+//    private $paymentId;
+//    private $verified;
+//    private $verificationTransferId;
 
     /**
      * @param $id
@@ -103,6 +103,28 @@ class Seller
         ];
 
         if ($data = Verification::initializingVerification($seller)) {
+            return $data;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $sellerId
+     * @param string $tyoe
+     * @return Api\Result|false
+     * @throws Exception\AuthException
+     * @throws Exception\ConfigException
+     * @throws Exception\NetworkException
+     * @throws Exception\PayuMarketplaceException
+     * @throws Exception\RequestException
+     * @throws Exception\ServerErrorException
+     * @throws Exception\ServerMaintenanceException
+     * @throws VerificationException
+     */
+    public function getVerification($verificationId)
+    {
+        if ($data = Verification::getVerification($verificationId)) {
             return $data;
         }
 
@@ -508,9 +530,6 @@ class Seller
             $data['translationFiles'] = $this->translationFiles;
         }
 
-        if ($this->foreign === 'yes' || !empty($this->accountNumberFromBank)) {
-            $data['statementData']['accountNumberFromBank'] = $this->accountNumberFromBank;
-        }
         if (!empty($this->ownerName)) {
             $data['statementData']['ownerName'] = $this->ownerName;
         }
@@ -519,6 +538,10 @@ class Seller
             if ($this->address['country'] !== 'PL') {
                 $this->foreign = 'yes';
             }
+        }
+
+        if (!empty($this->accountNumberFromBank)) {
+            $data['statementData']['accountNumberFromBank'] = $this->accountNumberFromBank;
         }
 
         if ($typeVerification !== PayU::PAYOUTS_TYPE_BANK_VTS
@@ -613,12 +636,12 @@ class Seller
         if (empty($this->verificationId)) {
             throw new VerificationException("An empty 'verificationId' parameter must be provided to be able to query the API");
         }
-        
+
         $data = [
             'verificationId' => $this->verificationId,
             'comment' => $comment,
         ];
-        
+
         if ($data = Verification::setCancel($data)) {
             return $data;
         }
@@ -642,9 +665,9 @@ class Seller
             if (in_array($method, ['translationFiles', 'files'])) {
                 $this->$method[] = $a;
             } elseif (in_array($method, ['hasDocument', 'verified', 'foreign'])) {
-                $this->$method[] = (bool)$a ? 'true' : 'false';
-            } elseif ($method = 'foreign') {
-                $this->$method[] = (bool)$a ? 'yes' : 'no';
+                $this->$method = (bool)$a ? 'true' : 'false';
+            } elseif ($method === 'foreign') {
+                $this->$method = (bool)$a ? 'yes' : 'no';
             } elseif (in_array($method, ['address', 'statementAddress'])) {
                 if ($method === 'address' && empty($a[0])) {
                     throw new VerificationException("Country is Required in address");
