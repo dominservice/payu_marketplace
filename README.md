@@ -64,7 +64,7 @@ If you do not already have PayU merchant account, [**please register in Producti
 
 Example "Configuration keys" from Merchant Panel
 
-![pos_configuration][img0]
+![pos_configuration][img0] (used from openpayu/openpayu)
 
 To configure OpenPayU environment you must provide a set of mandatory data in config.php file.
 
