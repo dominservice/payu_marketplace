@@ -9,7 +9,7 @@ The seller verification elements for the market place have been added, as well a
 **The PAYU Marketplace PHP library provides integration access to the REST API 2.1**
 
 ## Dependencies
-PHP >= 7.0 with extensions [cURL][ext1] and [hash][ext2]
+PHP >= 7.3 with extensions [cURL][ext1] and [hash][ext2]
 
 ## Documentation
 
