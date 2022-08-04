@@ -143,7 +143,7 @@ class Verification extends PayU
      * @throws ServerErrorException
      * @throws ServerMaintenanceException
      */
-    public static function setSellerFile($data)
+    public static function setFile($data)
     {
         try {
             $authType = self::getAuth();
@@ -220,6 +220,37 @@ class Verification extends PayU
         return $result;
     }
 
+    /**
+     * @param $documents
+     * @return Result|null
+     * @throws AuthException
+     * @throws Exception\ConfigException
+     * @throws NetworkException
+     * @throws PayuMarketplaceException
+     * @throws RequestException
+     * @throws ServerErrorException
+     * @throws ServerMaintenanceException
+     */
+    public static function setPayoutDetails($documents)
+    {
+        $data = Util::buildJsonFromArray($documents);
+
+        if (empty($data)) {
+            throw new PayuMarketplaceException('Empty message PayoutDetailsResponse');
+        }
+
+        try {
+            $authType = self::getAuth();
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
+        }
+
+        $pathUrl = Configuration::getDataloadingEndpoint() . '/payouts/bankAccountData';
+        $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'PayoutDetailsResponse');
+
+        return $result;
+    }
+
 
 
 
@@ -244,9 +275,7 @@ class Verification extends PayU
     {
         $data = array();
         $httpStatus = $response['code'];
-
         $message = Util::convertJsonToArray($response['response'], true);
-
         $data['status'] = isset($message['status']['statusCode']) ? $message['status']['statusCode'] : null;
 
         if (json_last_error() == JSON_ERROR_SYNTAX) {
@@ -258,7 +287,7 @@ class Verification extends PayU
             $data['response'] = $message;
             unset($message['status']);
         }
-// dump($data, $response, $httpStatus);
+
         $result = self::build($data);
 
         if ($httpStatus == 200 || $httpStatus == 201 || $httpStatus == 204 || $httpStatus == 422 || $httpStatus == 301 || $httpStatus == 302) {

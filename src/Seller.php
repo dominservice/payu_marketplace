@@ -452,6 +452,28 @@ class Seller
     }
 
     /**
+     * @param $bankDataId
+     * @return $this
+     */
+    public function setBankDataId($bankDataId)
+    {
+        $this->bankDataId = $bankDataId;
+
+        return $this;
+    }
+
+    /**
+     * @param $bankDataId
+     * @return $this
+     */
+    public function setAccountNumberRequested($accountNumberRequested)
+    {
+        $this->accountNumberRequested = $accountNumberRequested;
+
+        return $this;
+    }
+
+    /**
      * @param $typeAccount
      * @param $typeVerification
      * @return Api\Result|false
@@ -672,7 +694,7 @@ class Seller
             'filename' => $filename,
         ];
 
-        if ($data = Verification::setSellerFile($data)) {
+        if ($data = Verification::setFile($data)) {
             return $data;
         }
 
@@ -780,6 +802,63 @@ class Seller
             return $data;
         }
 
+        return false;
+    }
+
+    public function setPayoutDetails($tyoeVerification = PayU::TYPE_FULL)
+    {
+        if (empty($this->verificationId)) {
+            throw new VerificationException("An empty 'verificationId' parameter must be provided to be able to query the API");
+        }
+
+        if (empty($this->bankDataId)) {
+            throw new VerificationException("An empty 'bankDataId' parameter must be provided to be able to query the API");
+        }
+
+        if (empty($this->accountNumberRequested)) {
+            throw new VerificationException("An empty 'accountNumberRequested' parameter must be provided to be able to query the API");
+        }
+
+        if (empty($this->payoutDataVerificationType)) {
+            throw new VerificationException("An empty 'payoutDataVerificationType' parameter must be provided to be able to query the API");
+        }
+
+        if (empty($this->foreign)) {
+            $this->foreign = false;
+        } elseif ($this->foreign) {
+//            if ($tyoeVerification = PayU::TYPE_FULL || ) {
+//
+//            }
+        }
+
+
+
+
+//        $data = [
+//            'verificationId' => $this->verificationId,
+//            'bankDataId' => $this->bankDataId,
+//            'accountNumberRequested' => $this->accountNumberRequested,
+//            'payoutDataVerificationType' => $this->payoutDataVerificationType,
+//            'foreign' => $this->foreign,
+//            'expireDate' => $this->expireDate,
+//        ];
+//
+//        if (!empty($this->documentNumber)) {
+//            $data['documentNumber'] = $this->documentNumber;
+//        }
+//
+//        if (!empty($this->issueDate)) {
+//            $data['issueDate'] = $this->issueDate;
+//        }
+//
+//        if (!empty($this->translationFiles)) {
+//            $data['translationFiles'] = $this->translationFiles;
+//        }
+//
+//        if ($data = Verification::setSellerDocuments($data)) {
+//            return $data;
+//        }
+//
         return false;
     }
 
