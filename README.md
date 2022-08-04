@@ -6,6 +6,15 @@ The seller verification elements for the market place have been added, as well a
 
 ## __The library is currently under construction, please check back, it will be ready soon.__
 
+**The PAYU Marketplace PHP library provides integration access to the REST API 2.1**
+
+## Dependencies
+PHP >= 7.0 with extensions [cURL][ext1] and [hash][ext2]
+
+## Documentation
+
+Full implementation guide: [English Default][ext3] and [English Advanced][ext4]
+
 Installing
 ==========
 
