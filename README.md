@@ -256,10 +256,10 @@ if ($verificationId && $verificationStatus === 'WAITING_FOR_DATA') {
 <!--external links:-->
 [ext1]: http://php.net/manual/en/book.curl.php
 [ext2]: http://php.net/manual/en/book.hash.php
-[ext3]: http://developers.payu.com/en/
-[ext4]: http://developers.payu.com/pl/
+[ext3]: https://developers.payu.com/en/marketplace_b2c_c2c.html
+[ext4]: https://developers.payu.com/resources/AML_API-tech_spec_1.16.pdf
 [ext5]: https://www.payu.pl/en/commercial-offer
-[ext6]: https://secure.snd.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=SDK
+[ext6]: https://secure.snd.payu.com/cp/register?lang=pl
 
 <!--images:-->
 [img0]: readme_images/pos_configuration.png
