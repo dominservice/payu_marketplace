@@ -23,6 +23,10 @@ class PayU
     const TYPE_REVERIFICATION = 'REVERIFICATION';
     const TYPE_PERSONAL_ID_TAX_ID_CHANGE = 'PERSONAL_ID_TAX_ID_CHANGE';
 
+    const PAYOUTS_TYPE_BANK_VTS = 'BANK_VTS'; // Verification transfer service
+    const PAYOUTS_TYPE_BANK_NO_VTS = 'BANK_NO_VTS'; // Bank transfer without verification transfer service
+    const PAYOUTS_TYPE_BANK_STATEMENT = 'BANK_STATEMENT'; // Bank statement
+
     const STATUS_WAITING_FOR_DATA = 'WAITING_FOR_DATA';
     const STATUS_WAITING_FOR_VERIFICATION = 'WAITING_FOR_VERIFICATION';
     const STATUS_REJECTED = 'REJECTED';

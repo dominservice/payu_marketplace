@@ -39,7 +39,7 @@ class HttpCurl
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $auth->getHeaders());
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'HttpCurl::readHeader');
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'self::readHeader');
         if ($data) {
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
@@ -105,5 +105,4 @@ class HttpCurl
     {
         return Configuration::getProxyUser() != null ? ':' . Configuration::getProxyPassword() : false;
     }
-
 }

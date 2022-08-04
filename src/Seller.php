@@ -49,6 +49,7 @@ class Seller
     private $swiftCode;
     private $payoutDataVerificationType;
     private $bankName;
+    private $bankAddress;
     private $bankCountry;
     private $accountNumberFromBank;
     private $ownerName;
@@ -440,8 +441,13 @@ class Seller
         return false;
     }
 
-    public function setPayoutDetails($tyoeVerification = PayU::TYPE_FULL)
+
+
+
+    public function setPayoutDetails($typeVerification = PayU::PAYOUTS_TYPE_BANK_VTS)
     {
+        $this->foreign = 'No';
+
         if (empty($this->verificationId)) {
             throw new VerificationException("An empty 'verificationId' parameter must be provided to be able to query the API");
         }
@@ -454,12 +460,27 @@ class Seller
             throw new VerificationException("An empty 'accountNumberRequested' parameter must be provided to be able to query the API");
         }
 
-        if (empty($this->payoutDataVerificationType)) {
-            throw new VerificationException("An empty 'payoutDataVerificationType' parameter must be provided to be able to query the API");
+        if ($typeVerification === PayU::PAYOUTS_TYPE_BANK_VTS || $typeVerification === PayU::PAYOUTS_TYPE_BANK_NO_VTS) {
+            $this->payoutDataVerificationType = 'BANK_TRANSFER';
+        } elseif ($typeVerification === PayU::PAYOUTS_TYPE_BANK_STATEMENT) {
+            $this->payoutDataVerificationType = 'BANK_STATEMENT';
         }
 
-        if (empty($this->foreign)) {
-            $this->foreign = 'false';
+        if (empty($this->payoutDataVerificationType)) {
+            throw new VerificationException("The typeVerification parameter must be included in the list ['BANK_VTS', 'BANK_NO_VTS', 'BANK_STATEMENT]");
+        }
+
+
+        if ($typeVerification === PayU::PAYOUTS_TYPE_BANK_VTS) {
+            if (!empty($this->verificationTransferId)) {
+                $data['verificationTransferId'] = $this->verificationTransferId;
+            } else {
+                throw new VerificationException("If you have selected the Payout Verification 'BANK_VTS' (Verification transfer service) type, you must first download the transfer data using the setVerificationTransferManual() method, and then add the 'verificationTransferId' parameter to this query.");
+            }
+        }
+
+        if ($typeVerification === PayU::PAYOUTS_TYPE_BANK_STATEMENT && empty($this->hasDocument)) {
+            throw new VerificationException("If the typeVerification parameter equals BANK_STATEMENT then the 'hasDocument' parameter is required.You need to add a document of the type 'BANK_ACCOUNT_AGREEMENT'");
         }
 
         if (empty($this->verified)) {
@@ -471,7 +492,6 @@ class Seller
             'verificationId' => $this->verificationId,
             'accountNumberRequested' => $this->accountNumberRequested,
             'payoutDataVerificationType' => $this->payoutDataVerificationType,
-            'foreign' => $this->foreign,
             'expireDate' => $this->expireDate,
             'verified' => $this->verified,
         ];
@@ -488,7 +508,7 @@ class Seller
             $data['translationFiles'] = $this->translationFiles;
         }
 
-        if ($this->foreign || !empty($this->accountNumberFromBank)) {
+        if ($this->foreign === 'yes' || !empty($this->accountNumberFromBank)) {
             $data['statementData']['accountNumberFromBank'] = $this->accountNumberFromBank;
         }
         if (!empty($this->ownerName)) {
@@ -496,26 +516,39 @@ class Seller
         }
         if (!empty($this->address)) {
             $data['statementData']['address'] = $this->address;
+            if ($this->address['country'] !== 'PL') {
+                $this->foreign = 'yes';
+            }
         }
 
-        if ($this->foreign || !empty($this->swiftCode)) {
+        if ($typeVerification !== PayU::PAYOUTS_TYPE_BANK_VTS
+            && $this->foreign === 'yes'
+            && (empty($this->bankName) || empty($this->bankCountry) || empty($this->swiftCode))
+        ) {
+            throw new VerificationException("If the typeVerification parameter is not equal to BANK_VTS and the country in the owner's address is different than Poland, then the parameters 'swiftCode', 'bankName' and 'bankCountry' are required");
+        }
+
+        if (!empty($this->swiftCode)) {
             $data['swiftCode'] = $this->swiftCode;
         }
 
-        if ($this->foreign || !empty($this->bankName)) {
+        if (!empty($this->bankName)) {
             $data['bankName'] = $this->bankName;
         }
 
-        if ($this->foreign || !empty($this->bankCountry)) {
+        if (!empty($this->bankAddress)) {
+            $data['bankAddress'] = $this->bankAddress;
+        }
+
+        if (!empty($this->bankCountry)) {
             $data['bankCountry'] = $this->bankCountry;
         }
 
         if (!empty($this->paymentId )) {
-            $data['paymentId '] = $this->paymentId ;
+            $data['paymentId'] = $this->paymentId ;
         }
-        if (!empty($this->verificationTransferId )) {
-            $data['verificationTransferId '] = $this->verificationTransferId ;
-        }
+
+        $data['foreign'] = $this->foreign;
 
         if ($data = Verification::setPayoutDetails($data)) {
             return $data;
@@ -523,6 +556,76 @@ class Seller
 
         return false;
     }
+
+    public function setVerificationTransferManual($email, $currency = 'PLN')
+    {
+        if (empty($this->verificationId)) {
+            throw new VerificationException("An empty 'verificationId' parameter must be provided to be able to query the API");
+        }
+
+        $data = [
+            'verificationId' => $this->verificationId,
+            'currency' => $currency,
+            'email' => $email,
+        ];
+
+        if ($data = Verification::setVerificationTransferManual($data)) {
+            return $data;
+        }
+
+        return false;
+    }
+
+    public function setPayoneer($bankDataId, $payoneerId)
+    {
+        if (empty($this->verificationId)) {
+            throw new VerificationException("An empty 'verificationId' parameter must be provided to be able to query the API");
+        }
+
+        $data = [
+            'verificationId' => $this->verificationId,
+            'bankDataId' => $bankDataId,
+            'payoneerId' => $payoneerId,
+        ];
+
+        if ($data = Verification::setPayoneer($data)) {
+            return $data;
+        }
+
+        return false;
+    }
+
+    public function setComplete()
+    {
+        if (empty($this->verificationId)) {
+            throw new VerificationException("An empty 'verificationId' parameter must be provided to be able to query the API");
+        }
+
+        if ($data = Verification::setComplete(['verificationId' => $this->verificationId])) {
+            return $data;
+        }
+
+        return false;
+    }
+
+    public function setCancel($comment)
+    {
+        if (empty($this->verificationId)) {
+            throw new VerificationException("An empty 'verificationId' parameter must be provided to be able to query the API");
+        }
+        
+        $data = [
+            'verificationId' => $this->verificationId,
+            'comment' => $comment,
+        ];
+        
+        if ($data = Verification::setCancel($data)) {
+            return $data;
+        }
+
+        return false;
+    }
+
 
 
 
@@ -540,6 +643,8 @@ class Seller
                 $this->$method[] = $a;
             } elseif (in_array($method, ['hasDocument', 'verified', 'foreign'])) {
                 $this->$method[] = (bool)$a ? 'true' : 'false';
+            } elseif ($method = 'foreign') {
+                $this->$method[] = (bool)$a ? 'yes' : 'no';
             } elseif (in_array($method, ['address', 'statementAddress'])) {
                 if ($method === 'address' && empty($a[0])) {
                     throw new VerificationException("Country is Required in address");
@@ -566,6 +671,8 @@ class Seller
                 if ($method === 'address' && isset($a[4])) {
                     $this->address['isAccountCloned'] = (bool)$a[4] ? 'true' : 'false';
                 }
+            } elseif ($method === 'payoutDataVerificationType') {
+                throw new VerificationException("The 'payoutDataVerificationType' parameter cannot be specified, its value is defined on the basis of the payout type.");
             } else {
                 $this->$method = $a;
             }

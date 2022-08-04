@@ -63,6 +63,11 @@ class Configuration
     private static $verificationAdviceEndpoint = '';
 
     /**
+     * Verification Transfer protocol - endpoint address
+     */
+    private static $verificationTransferEndpoint = '';
+
+    /**
      * Verification dataloading protocol - endpoint address
      */
     private static $dataloadingEndpoint = '';
@@ -105,6 +110,7 @@ class Configuration
     const AML_VERIFICATION_CONTEXT = 'api/aml-verification/v1/';
     const VERIVICATION_CONTEXT = 'verification';
     const VERIVICATION_ADVICE_CONTEXT = 'verification-advice';
+    const VERIVICATION_TRANSFER_CONTEXT = 'verification-transfers';
     const DATALOADING_CONTEXT = 'dataloading';
 
     /**
@@ -166,6 +172,7 @@ class Configuration
         self::$oauthEndpoint = $domain . self::OAUTH_CONTEXT;
         self::$verificationEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::VERIVICATION_CONTEXT;
         self::$verificationAdviceEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::VERIVICATION_ADVICE_CONTEXT;
+        self::$verificationTransferEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::VERIVICATION_TRANSFER_CONTEXT;
         self::$dataloadingEndpoint = $domain . self::AML_VERIFICATION_CONTEXT . self::DATALOADING_CONTEXT;
     }
 
@@ -199,6 +206,14 @@ class Configuration
     public static function getVerificationAdviceEndpoint()
     {
         return self::$verificationAdviceEndpoint;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getVerificationTransferEndpoint()
+    {
+        return self::$verificationTransferEndpoint;
     }
 
     /**

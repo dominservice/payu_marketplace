@@ -251,14 +251,86 @@ class Verification extends PayU
         return $result;
     }
 
+    public static function setVerificationTransferManual($transfer)
+    {
+        $data = Util::buildJsonFromArray($transfer);
 
+        if (empty($data)) {
+            throw new PayuMarketplaceException('Empty message VerificationTransferManualResponse');
+        }
 
+        try {
+            $authType = self::getAuth();
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
+        }
 
+        $pathUrl = Configuration::getVerificationTransferEndpoint() . '/manual';
+        $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'VerificationTransferManualResponse');
 
+        return $result;
+    }
 
+    public static function setPayoneer($payoneer)
+    {
+        $data = Util::buildJsonFromArray($payoneer);
 
+        if (empty($data)) {
+            throw new PayuMarketplaceException('Empty message PayoneerResponse');
+        }
 
+        try {
+            $authType = self::getAuth();
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
+        }
 
+        $pathUrl = Configuration::getDataloadingEndpoint() . '/payouts/payoneer';
+        $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'PayoneerResponse');
+
+        return $result;
+    }
+
+    public static function setComplete($complete)
+    {
+        $data = Util::buildJsonFromArray($complete);
+
+        if (empty($data)) {
+            throw new PayuMarketplaceException('Empty message CompleteResponse');
+        }
+
+        try {
+            $authType = self::getAuth();
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
+        }
+
+        $pathUrl = Configuration::getVerificationEndpoint() . '/complete';
+        $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'CompleteResponse');
+
+        return $result;
+    }
+
+    public static function setCancel($cancel)
+    {
+        $data = Util::buildJsonFromArray($cancel);
+
+        if (empty($data)) {
+            throw new PayuMarketplaceException('Empty message CancelResponse');
+        }
+
+        try {
+            $authType = self::getAuth();
+        } catch (PayuMarketplaceException $e) {
+            throw new PayuMarketplaceException($e->getMessage(), $e->getCode());
+        }
+
+        $pathUrl = Configuration::getVerificationEndpoint() . '/cancel';
+        $result = self::verifyResponse(Http::doPost($pathUrl, $data, $authType), 'CancelResponse');
+
+        return $result;
+    }
+    
     /**
      * Verify response from PayU
      *

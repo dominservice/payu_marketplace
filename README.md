@@ -2,14 +2,14 @@ Library for PAYU Marketplace
 =====
 
 This library is based on "openpay/openpay"
-The seller verification elements for the marketplace have been added, as well as the marketplace service itself.
+The seller verification elements for the market place have been added, as well as the marketplace service itself.
 
 ## __The library is currently under construction, please check back, it will be ready soon.__
 
 **The PAYU Marketplace PHP library provides integration access to the REST API 2.1**
 
 ## Dependencies
-PHP >= 7.3 with extensions [cURL][ext1] and [hash][ext2]
+PHP >= 5.3 with extensions [cURL][ext1] and [hash][ext2]
 
 ## Documentation
 
@@ -71,9 +71,9 @@ use Dominservice\PayuMarketplace\Api\Configuration;
 **Important:** SDK works only with 'REST API' (Checkout) points of sales (POS).
 If you do not already have PayU merchant account, [**please register in Production**][ext5] or [**please register in Sandbox**][ext6]
 
-Example "Configuration keys" from Merchant Panel
+Example "Configuration keys" from Merchant Panel (used from openpayu/openpayu)
 
-![pos_configuration][img0] (used from openpayu/openpayu)
+![pos_configuration][img0]
 
 To configure OpenPayU environment you must provide a set of mandatory data in config.php file.
 
@@ -115,6 +115,31 @@ Set Cache directory:
     
     Configuration::setOauthTokenCache(new OauthCacheFile(__DIR__ . '/payu_cache'));
 ```
+
+The method is built by adding "set" or "get" to the parameter with a few exceptions
+
+For example, if we want to add the "accountNumberFromBank" parameter, we must provide the following method
+```php
+    (new Seller->setAccountNumberFromBank('111111111111111111111111111'))
+```
+If we want to get the value of this field, we have to do it like this:
+```php
+    (new Seller->grtAccountNumberFromBank())
+```
+Otherwise, we add the address as well as the statementData->address
+```php
+    // (new Seller())->setAddress([country ISO code], [street], [zipcode], [city], [is account cloned])
+    (new Seller())->setAddress('PL', 'Zatylna 23/3', '00-001', 'Testowo', true|false)
+    // (new Seller())->setStatementAddress([country ISO code], [street], [zipcode], [city])
+    (new Seller())->setStatementAddress('PL', 'Zatylna 23/3', '00-001', 'Testowo')
+```
+But if we want to get the value of one of them we use **getAddress()** in both cases because the above methods are used for different CURL queries.
+```php
+    (new Seller())->getAddress()
+```
+For the fields 'hasDocument', 'verified', 'foreign' the value must be true or false, in immy if we enter anything, the value will be true, and if we enter nothing, the value will be false.
+
+For the rest of the fields in the 'statementData' table, we give methods with the value of the field name as in the examples below.
 
 
 # TEST
@@ -215,8 +240,8 @@ if ($verificationId && $verificationStatus === 'WAITING_FOR_DATA') {
                 ->setVerificationId($verificationId)
                 ->setDocumentId($sellerDocumentId)
                 ->setDocumentType('REGISTRY_DOCUMENT')
-                ->setFile($sellerFiles[$filename])
-                ->setFile($sellerFiles[$filename2])
+                ->setFiles($sellerFiles[$filename])
+                ->setFiles($sellerFiles[$filename2])
                 ->setSellerDocuments();
                 
             $associateDocumentId = $this->uuid();
@@ -226,8 +251,8 @@ if ($verificationId && $verificationStatus === 'WAITING_FOR_DATA') {
                 ->setDocumentId($associateDocumentId)
                 ->setDocumentType('RESIDENCE_PERMIT')
                 ->setDocumentNumber('QWE 111111')
-                ->setFile($sellerFiles[$filename])
-                ->setFile($sellerFiles[$filename2])
+                ->setFiles($sellerFiles[$filename])
+                ->setFiles($sellerFiles[$filename2])
                 ->setIssueDate('2022-01-02')
                 ->setExpireDate('2032-01-02')
                 ->setAssociateDocuments();
@@ -252,6 +277,10 @@ if ($verificationId && $verificationStatus === 'WAITING_FOR_DATA') {
 //            ->setDescription('bla bla blaS')
 //            ->createOrder(time());
 ```
+
+
+
+
 
 <!--external links:-->
 [ext1]: http://php.net/manual/en/book.curl.php
