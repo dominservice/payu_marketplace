@@ -45,6 +45,17 @@ class Seller
     private $documentNumber;
     private $issueDate;
     private $expireDate;
+    private $hasDocument;
+    private $swiftCode;
+    private $payoutDataVerificationType;
+    private $bankName;
+    private $bankCountry;
+    private $accountNumberFromBank;
+    private $ownerName;
+    private $foreign;
+    private $paymentId;
+    private $verified;
+    private $verificationTransferId;
 
     /**
      * @param $id
@@ -95,382 +106,6 @@ class Seller
         }
 
         return false;
-    }
-
-    /**
-     * @param $verificationId
-     * @return $this
-     */
-    public function setVerificationId($verificationId)
-    {
-        $this->verificationId = $verificationId;
-
-        return $this;
-    }
-
-    /**
-     * @param $sellerId
-     * @return $this
-     */
-    public function setSellerId($sellerId)
-    {
-        $this->sellerId = $sellerId;
-
-        return $this;
-    }
-
-    /**
-     * @param $companyName
-     * @return $this
-     */
-    public function setCompanyName($companyName)
-    {
-        $this->companyName = $companyName;
-
-        return $this;
-    }
-
-    /**
-     * @param $name
-     * @return $this
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @param $surname
-     * @return $this
-     */
-    public function setSurname($surname)
-    {
-        $this->surname = $surname;
-
-        return $this;
-    }
-
-    /**
-     * @param $taxId
-     * @return $this
-     */
-    public function setTaxId($taxId)
-    {
-        $this->taxId = $taxId;
-
-        return $this;
-    }
-
-    /**
-     * @param $legalForm
-     * @return $this
-     */
-    public function setLegalForm($legalForm)
-    {
-        $this->legalForm = $legalForm;
-
-        return $this;
-    }
-
-    /**
-     * Check information on this page
-     * https://stat.gov.pl/metainformacje/slownik-pojec/pojecia-stosowane-w-statystyce-publicznej/97,pojecie.html
-     *
-     * @param $gusCode
-     * @return $this
-     */
-    public function setGusCode($gusCode)
-    {
-        $this->gusCode = $gusCode;
-
-        return $this;
-    }
-
-    /**
-     * @param $registryNumber
-     * @return $this
-     */
-    public function setRegistryNumber($registryNumber)
-    {
-        $this->registryNumber = $registryNumber;
-
-        return $this;
-    }
-
-    /**
-     * @param $registrationDate
-     * @return $this
-     */
-    public function setRegistrationDate($registrationDate)
-    {
-        $this->registrationDate = $registrationDate;
-
-        return $this;
-    }
-
-    /**
-     * @param string $country
-     * @param string|false $street
-     * @param string|false $zipcode
-     * @param string|false $city
-     * @param bool $isAccountCloned
-     * @return $this
-     */
-    public function setAddress($country, $street = false, $zipcode = false, $city = false, $isAccountCloned = false)
-    {
-        $this->address = ['country' => $country];
-
-        if ($street) {
-            $this->address['street'] = $street;
-        }
-
-        if ($zipcode) {
-            $this->address['Zipcode'] = $zipcode;
-        }
-
-        if ($city) {
-            $this->address['city'] = $city;
-        }
-
-        if ($isAccountCloned) {
-//            $this->address['isAccountCloned'] = $isAccountCloned;
-            $this->address['isAccountCloned'] = 'true';
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param $email
-     * @return $this
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * @param $phone
-     * @return $this
-     */
-    public function setPhone($phone)
-    {
-        $this->phone = $phone;
-
-        return $this;
-    }
-
-    /**
-     * @param $personalIdentificationNumber
-     * @return $this
-     */
-    public function setPersonalIdentificationNumber($personalIdentificationNumber)
-    {
-        $this->personalIdentificationNumber = $personalIdentificationNumber;
-
-        return $this;
-    }
-
-    /**
-     * @param $dateOfBirth
-     * @return $this
-     */
-    public function setDateOfBirth($dateOfBirth)
-    {
-        $this->dateOfBirth = $dateOfBirth;
-
-        return $this;
-    }
-
-    /**
-     * @param $associateId
-     * @return $this
-     */
-    public function setAssociateId($associateId)
-    {
-        $this->associateId = $associateId;
-
-        return $this;
-    }
-
-    /**
-     * @param $associateType
-     * @return $this
-     */
-    public function setAssociateType($associateType)
-    {
-        $this->associateType = $associateType;
-
-        return $this;
-    }
-
-    /**
-     * @param $associateName
-     * @return $this
-     */
-    public function setAssociateName($associateName)
-    {
-        $this->associateName = $associateName;
-
-        return $this;
-    }
-
-    /**
-     * @param $associateSurname
-     * @return $this
-     */
-    public function setAssociateSurname($associateSurname)
-    {
-        $this->associateSurname = $associateSurname;
-
-        return $this;
-    }
-
-    /**
-     * @param $associateCitizenship
-     * @return $this
-     */
-    public function setAssociateCitizenship($associateCitizenship)
-    {
-        $this->associateCitizenship = strtoupper($associateCitizenship);
-
-        return $this;
-    }
-
-    /**
-     * @param $associateIdentityNumber
-     * @return $this
-     */
-    public function setAssociateIdentityNumber($associateIdentityNumber)
-    {
-        $this->associateIdentityNumber = $associateIdentityNumber;
-
-        return $this;
-    }
-
-    /**
-     * @param $associateBirthDate
-     * @return $this
-     */
-    public function setAssociateBirthDate ($associateBirthDate )
-    {
-        $this->associateBirthDate  = $associateBirthDate ;
-
-        return $this;
-    }
-
-    /**
-     * @param $associateCountryOfBirth
-     * @return $this
-     */
-    public function setAssociateCountryOfBirth ($associateCountryOfBirth )
-    {
-        $this->associateCountryOfBirth  = $associateCountryOfBirth ;
-
-        return $this;
-    }
-
-    /**
-     * @param $documentId
-     * @return $this
-     */
-    public function setDocumentId($documentId)
-    {
-        $this->documentId = $documentId;
-
-        return $this;
-    }
-
-    /**
-     * @param $type
-     * @return $this
-     */
-    public function setDocumentType($type)
-    {
-        $this->documentType = $type;
-
-        return $this;
-    }
-
-    /**
-     * @param $file
-     * @return $this
-     */
-    public function setFile($file)
-    {
-        $this->files[] = $file;
-
-        return $this;
-    }
-
-    /**
-     * @param $translationFile
-     * @return $this
-     */
-    public function setTranslationFile($translationFile)
-    {
-        $this->translationFiles[] = $translationFile;
-
-        return $this;
-    }
-
-    /**
-     * @param $documentNumber
-     * @return $this
-     */
-    public function setDocumentNumber($documentNumber)
-    {
-        $this->documentNumber = strtoupper($documentNumber);
-
-        return $this;
-    }
-
-    /**
-     * @param $issueDate
-     * @return $this
-     */
-    public function setIssueDate($issueDate)
-    {
-        $this->issueDate = $issueDate;
-
-        return $this;
-    }
-
-    /**
-     * @param $issueDate
-     * @return $this
-     */
-    public function setExpireDate($expireDate)
-    {
-        $this->expireDate = $expireDate;
-
-        return $this;
-    }
-
-    /**
-     * @param $bankDataId
-     * @return $this
-     */
-    public function setBankDataId($bankDataId)
-    {
-        $this->bankDataId = $bankDataId;
-
-        return $this;
-    }
-
-    /**
-     * @param $bankDataId
-     * @return $this
-     */
-    public function setAccountNumberRequested($accountNumberRequested)
-    {
-        $this->accountNumberRequested = $accountNumberRequested;
-
-        return $this;
     }
 
     /**
@@ -824,42 +459,120 @@ class Seller
         }
 
         if (empty($this->foreign)) {
-            $this->foreign = false;
-        } elseif ($this->foreign) {
-//            if ($tyoeVerification = PayU::TYPE_FULL || ) {
-//
-//            }
+            $this->foreign = 'false';
         }
 
+        if (empty($this->verified)) {
+            $this->verified = 'false';
+        }
 
+        $data = [
+            'bankDataId' => $this->bankDataId,
+            'verificationId' => $this->verificationId,
+            'accountNumberRequested' => $this->accountNumberRequested,
+            'payoutDataVerificationType' => $this->payoutDataVerificationType,
+            'foreign' => $this->foreign,
+            'expireDate' => $this->expireDate,
+            'verified' => $this->verified,
+        ];
 
+        if (!empty($this->hasDocument)) {
+            $data['hasDocument'] = $this->hasDocument;
+        }
 
-//        $data = [
-//            'verificationId' => $this->verificationId,
-//            'bankDataId' => $this->bankDataId,
-//            'accountNumberRequested' => $this->accountNumberRequested,
-//            'payoutDataVerificationType' => $this->payoutDataVerificationType,
-//            'foreign' => $this->foreign,
-//            'expireDate' => $this->expireDate,
-//        ];
-//
-//        if (!empty($this->documentNumber)) {
-//            $data['documentNumber'] = $this->documentNumber;
-//        }
-//
-//        if (!empty($this->issueDate)) {
-//            $data['issueDate'] = $this->issueDate;
-//        }
-//
-//        if (!empty($this->translationFiles)) {
-//            $data['translationFiles'] = $this->translationFiles;
-//        }
-//
-//        if ($data = Verification::setSellerDocuments($data)) {
-//            return $data;
-//        }
-//
+        if (!empty($this->issueDate)) {
+            $data['issueDate'] = $this->issueDate;
+        }
+
+        if (!empty($this->translationFiles)) {
+            $data['translationFiles'] = $this->translationFiles;
+        }
+
+        if ($this->foreign || !empty($this->accountNumberFromBank)) {
+            $data['statementData']['accountNumberFromBank'] = $this->accountNumberFromBank;
+        }
+        if (!empty($this->ownerName)) {
+            $data['statementData']['ownerName'] = $this->ownerName;
+        }
+        if (!empty($this->address)) {
+            $data['statementData']['address'] = $this->address;
+        }
+
+        if ($this->foreign || !empty($this->swiftCode)) {
+            $data['swiftCode'] = $this->swiftCode;
+        }
+
+        if ($this->foreign || !empty($this->bankName)) {
+            $data['bankName'] = $this->bankName;
+        }
+
+        if ($this->foreign || !empty($this->bankCountry)) {
+            $data['bankCountry'] = $this->bankCountry;
+        }
+
+        if (!empty($this->paymentId )) {
+            $data['paymentId '] = $this->paymentId ;
+        }
+        if (!empty($this->verificationTransferId )) {
+            $data['verificationTransferId '] = $this->verificationTransferId ;
+        }
+
+        if ($data = Verification::setPayoutDetails($data)) {
+            return $data;
+        }
+
         return false;
+    }
+
+
+
+    public function __call($m, $a = null)
+    {
+        if (count($a) === 1) {
+            $a = $a[0];
+        }
+
+        $method = lcfirst(preg_replace('#(^get|^set)#', '', $m));
+        if (preg_match('#^get#', $m)) {
+            return isset($this->$method) ? $this->$method : null;
+        } elseif (preg_match('#^set#', $m)) {
+            if (in_array($method, ['translationFiles', 'files'])) {
+                $this->$method[] = $a;
+            } elseif (in_array($method, ['hasDocument', 'verified', 'foreign'])) {
+                $this->$method[] = (bool)$a ? 'true' : 'false';
+            } elseif (in_array($method, ['address', 'statementAddress'])) {
+                if ($method === 'address' && empty($a[0])) {
+                    throw new VerificationException("Country is Required in address");
+                }
+
+                $this->address = [];
+
+                if ($method === 'address' || !empty($a[0])) {
+                    $this->address['country'] = $a[0];
+                }
+
+                if (!empty($a[1])) {
+                    $this->address['street'] = $a[1];
+                }
+
+                if (!empty($a[2])) {
+                    $this->address['Zipcode'] = $a[2];
+                }
+
+                if (!empty($a[3])) {
+                    $this->address['city'] = $a[3];
+                }
+
+                if ($method === 'address' && isset($a[4])) {
+                    $this->address['isAccountCloned'] = (bool)$a[4] ? 'true' : 'false';
+                }
+            } else {
+                $this->$method = $a;
+            }
+            return $this;
+        }
+
+        throw new VerificationException("Call to undefined method Dominservice\PayuMarketplace\Seller::{$m}() ");
     }
 
 }
