@@ -6,6 +6,12 @@ The seller verification elements for the market place have been added, as well a
 
 ## __The library is currently under construction, please check back, it will be ready soon.__
 
+-----------
+Remember !!
+===========
+When registering a marketplace account with PayU, you must send the URL for verification notification. This address cannot be entered in the panel or sent via API. PayU employees must enter this address manually.
+
+-----------
 **The PAYU Marketplace PHP library provides integration access to the REST API 2.1**
 
 ## Dependencies
