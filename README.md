@@ -11,6 +11,16 @@ Remember !!
 ===========
 When registering a marketplace account with PayU, you must send the URL for verification notification. This address cannot be entered in the panel or sent via API. PayU employees must enter this address manually.
 
+Celem maksymalnego skrócenia czasu rejestracji konta, przygotuj dokumenty firmy, aktywne adresy e-mail oraz numer rachunku bankowego Twojej firmy.
+
+W zależności od formy prawnej jaką posiada Twoja firma, przygotuj poniżej wskazane dokumenty. Wykonaj ich skan lub zdjęcie oraz zapisz je na dysku komputera. W 5 kroku rejestracji konta zostaniesz poproszony o załączenie plików z kopią dokumentów. Do rejestracji będziesz potrzebował:
+
+* **jednoosobowa działalność gospodarcza:** skan dowodu osobistego właściciela firmy,
+* **spółka cywilna:** NIP i REGON (jeśli nie jest widoczny w KRS), skan umowy spółki cywilnej, skany dowodów osobistych wszystkich wspólników,
+* **spółka akcyjna, z ograniczoną odpowiedzialnością, jawna, komandytowa:** NIP i REGON (jeśli nie jest widoczny w KRS), skan dowodu osobistego osoby podpisującej umowę (wpisaną jako reprezentant w KRS),
+* **fundacja lub stowarzyszenie:** NIP i REGON (jeśli nie jest widoczny w KRS), w przypadku fundacji skan dokumentu statusowego, skan dowodu osobistego osoby reprezentującej firmę (wpisanej jako reprezentant w KRS),
+* **instytucja publiczna:** NIP i REGON, skan dowodu osobistego osoby reprezentującej firmę, skan dokumentu potwierdzającego utworzenie danego podmiotu.
+
 -----------
 **The PAYU Marketplace PHP library provides integration access to the REST API 2.1**
 
