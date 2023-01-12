@@ -514,7 +514,6 @@ class Seller
             'verificationId' => $this->verificationId,
             'accountNumberRequested' => $this->accountNumberRequested,
             'payoutDataVerificationType' => $this->payoutDataVerificationType,
-            'expireDate' => $this->expireDate,
             'verified' => $this->verified,
         ];
 
