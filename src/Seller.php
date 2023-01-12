@@ -588,7 +588,7 @@ class Seller
 
         $data = [
             'verificationId' => $this->verificationId,
-            'currency' => $currency,
+            'transferCurrency' => $currency,
             'email' => $email,
         ];
 
