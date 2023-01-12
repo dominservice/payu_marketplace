@@ -361,6 +361,7 @@ class Verification extends PayU
     {
         $data = array();
         if ($requestType === 'GET') {
+            $httpStatus = $response['code'];
             $data['status'] = null;
             $data['response'] = $response;
         } else {
