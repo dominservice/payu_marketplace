@@ -204,8 +204,10 @@ class Seller
 
         if (empty($this->legalForm)) {
             throw new VerificationException("An empty 'legalForm' parameter must be provided to be able to query the API");
-        } elseif (!in_array($this->legalForm, ['PRIVATE_PERSON', 'SOLE_TRADER'])) {
-            throw new VerificationException("legalForm value please place PRIVATE_PERSON or SOLE_TRADER.");
+        } elseif (!in_array($this->legalForm, [
+            'PRIVATE_PERSON', 'SOLE_TRADER', 'ASSOCIATION', 'CIVIL_LAW_PARTNERSHIP', 'FOREIGN_COMPANY', 'FOUNDATION', 'GENERAL_PARTNERSHIP', 'JOINT_STOCK_COMPANY', 'LIMITED_JOINT_STOCK_PARTNERSHIP', 'LIMITED_LIABILITY_COMPANY', 'LIMITED_LIABILITY_PARTNERSHIP', 'PROFESSIONAL_PARTNERSHIP', 'LIMITED_PARTNERSHIP', 'OTHER'
+        ])) {
+            throw new VerificationException("Please, provide correct value of legalForm.");
         } else {
             $data['legalForm'] = $this->legalForm;
         }
